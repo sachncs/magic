@@ -1,0 +1,23 @@
+{
+  "name": "@magic/storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@magic/shared": "*",
+    "better-sqlite3": "^11.5.0",
+    "ignore": "^6.0.0",
+    "simple-git": "^3.27.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

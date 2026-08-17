@@ -1,0 +1,26 @@
+{
+  "name": "@magic/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./branded": "./src/branded.ts",
+    "./types": "./src/types/index.ts",
+    "./events": "./src/events/index.ts",
+    "./pricing": "./src/types/pricing.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "zod": "^3.23.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}
