@@ -4,8 +4,8 @@
  */
 
 import type {ToolUseEvent} from '@magic/shared/events';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Badge} from '@/components/ui/badge';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
+import {Badge} from '@/components/ui';
 
 interface ToolCardViewProps {
   event: ToolUseEvent;

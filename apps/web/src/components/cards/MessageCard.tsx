@@ -2,7 +2,7 @@
  * @fileoverview Renders a single chat message in the stream.
  */
 
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {cn} from '@/lib/utils';
 import type {MessageEvent} from '@magic/shared/events';
 

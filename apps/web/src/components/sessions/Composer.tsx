@@ -4,8 +4,8 @@
  */
 
 import {useState, type KeyboardEvent} from 'react';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
+import {Button} from '@/components/ui';
+import {Input} from '@/components/ui';
 import {useUiStore} from '@/stores/ui';
 import {post} from '@/lib/api';
 

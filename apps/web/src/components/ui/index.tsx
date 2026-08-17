@@ -11,7 +11,7 @@
  *                        dialog sheet dropdown-menu
  */
 
-import {forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type TextareaHTMLAttributes, type HTMLAttributes, type SelectHTMLAttributes} from 'react';
+import {forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type TextareaHTMLAttributes, type HTMLAttributes} from 'react';
 import {cn} from '@/lib/utils';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & {variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost'; size?: 'default' | 'sm' | 'lg' | 'icon'}>(
@@ -105,7 +105,7 @@ export const Badge = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>
 );
 Badge.displayName = 'Badge';
 
-export const Label = forwardRef<HTMLLabelElement, HTMLAttributes<HTMLLabelElement>>(
+export const Label = forwardRef<HTMLLabelElement, HTMLAttributes<HTMLLabelElement> & {htmlFor?: string}>(
   ({className, ...props}, ref) => (
     <label ref={ref} className={cn('text-sm font-medium leading-none', className)} {...props} />
   ),
@@ -171,7 +171,7 @@ export const TabsContent = ({children, value, className}: {children: React.React
 );
 
 // Select (very minimal; shadcn uses Radix Select)
-export const Select = ({children, value, onValueChange}: {children: React.ReactNode; value: string; onValueChange: (v: string) => void}) => (
+export const Select = ({children, value, onValueChange, defaultValue}: {children: React.ReactNode; value?: string; onValueChange?: (v: string) => void; defaultValue?: string}) => (
   <div>{children}</div>
 );
 export const SelectTrigger = ({children, id}: {children: React.ReactNode; id?: string}) => (
@@ -184,8 +184,6 @@ export const SelectItem = ({children, value}: {children: React.ReactNode; value:
 );
 
 // Tooltip provider placeholder (real impl wraps Radix)
-export const TooltipProvider = ({children, delayDuration}: {children: React.ReactNode; delayDuration?: number}) => (
+export const TooltipProvider = ({children}: {children: React.ReactNode; delayDuration?: number}) => (
   <>{children}</>
 );
-void delayDuration;
-void SelectHTMLAttributes;

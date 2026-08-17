@@ -3,11 +3,7 @@
  * indicator, write-only API key input, test-connection probe.
  */
 
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Input} from '@/components/ui/input';
-import {Button} from '@/components/ui/button';
-import {Label} from '@/components/ui/label';
-import {Badge} from '@/components/ui/badge';
+import {Card, CardContent, CardHeader, CardTitle, Input, Button, Label, Badge} from '@/components/ui';
 import {post} from '@/lib/api';
 import {useState} from 'react';
 

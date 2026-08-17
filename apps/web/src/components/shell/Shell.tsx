@@ -8,7 +8,7 @@ import type {ReactNode} from 'react';
 import {Component, type ErrorInfo} from 'react';
 import {Link, useRouterState} from '@tanstack/react-router';
 import {Settings, ListTodo} from 'lucide-react';
-import {Button} from '@/components/ui/button';
+import {Button} from '@/components/ui';
 import {cn} from '@/lib/utils';
 
 interface ShellProps {

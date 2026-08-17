@@ -4,10 +4,10 @@
  */
 
 import {useState} from 'react';
-import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {post} from '@/lib/api';
-import type {CheckPointEvent} from '@magic/shared/events';
+import type {CheckpointEvent as CheckPointEvent} from '@magic/shared/events';
 
 interface CheckPointCardProps {
   event: CheckPointEvent;

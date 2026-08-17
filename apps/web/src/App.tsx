@@ -2,7 +2,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {RouterProvider, createRouter, createRootRoute, createRoute, Outlet} from '@tanstack/react-router';
 import {ThemeProvider} from 'next-themes';
 import {Toaster} from 'sonner';
-import {TooltipProvider} from '@/components/ui/tooltip';
+import {TooltipProvider} from '@/components/ui';
 import {Shell} from '@/components/shell/Shell';
 import {SessionsPage} from '@/routes/sessions.$id';
 import {SettingsGeneral} from '@/routes/settings/general';

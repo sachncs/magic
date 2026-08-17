@@ -28,10 +28,16 @@ export const SCHEMA_VERSION_LATEST: SchemaVersion = 'v1';
 export const SCHEMA_VERSION_MIN_SUPPORTED = 'v1' as const;
 
 /**
- * The current graph definition version. Bump when agents, prompts, or
- * routing change in a way that affects replay.
+ * Graph definition version. Bumped when the graph definition changes
+ * in a way that affects replay.
  */
-export const GRAPH_VERSION_LATEST = 'v1' as const;
+export type GraphVersion = string;
+
+/**
+ * The current graph definition version. Bump when the graph definition
+ * changes in a way that affects replay.
+ */
+export const GRAPH_VERSION_LATEST: GraphVersion = 'v1';
 
 /**
  * Parses a `SchemaVersion` string. Throws if malformed.

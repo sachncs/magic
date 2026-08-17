@@ -31,7 +31,8 @@ app.post('/todos', (req: Request, res: Response) => {
 });
 
 app.get('/todos/:id', (req: Request, res: Response) => {
-  const todo = store.get(req.params.id);
+  const id = req.params.id ?? '';
+  const todo = store.get(id);
   if (todo === undefined) {
     return res.status(404).json({error: 'not found'});
   }

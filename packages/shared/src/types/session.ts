@@ -5,6 +5,7 @@
  */
 
 import {z} from 'zod';
+import type {SchemaVersion, GraphVersion} from './version.js';
 
 /**
  * The lifecycle states a session can be in.
@@ -52,11 +53,10 @@ export type {SchemaVersion} from './version.js';
 export {SCHEMA_VERSION_LATEST} from './version.js';
 
 /**
- * Graph definition version. Bumped when agent definitions or routing change.
- * Stamped on every session so old sessions can be replayed under the
- * correct definition (or warn on mismatch).
+ * Graph definition version. Re-exported from `./version.js`; defined
+ * there to keep the schema/graph version constants in one place.
  */
-export type GraphVersion = string;
+export type {GraphVersion};
 
 /**
  * The canonical session metadata record. Persisted as `meta.json`.

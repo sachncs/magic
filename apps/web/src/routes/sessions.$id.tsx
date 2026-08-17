@@ -4,9 +4,9 @@
  */
 
 import {useState} from 'react';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui';
+import {Input} from '@/components/ui';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {ChatStream} from '@/components/sessions/ChatStream';
 import {Composer} from '@/components/sessions/Composer';
 import {useCreateSession} from '@/hooks/useCreateSession';

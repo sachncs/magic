@@ -3,11 +3,7 @@
  * persistence backend selector.
  */
 
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Input} from '@/components/ui/input';
-import {Switch} from '@/components/ui/switch';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Label} from '@/components/ui/label';
+import {Card, CardContent, CardHeader, CardTitle, Input, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label} from '@/components/ui';
 
 export function SettingsGeneral() {
   return (

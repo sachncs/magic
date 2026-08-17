@@ -18,7 +18,7 @@
     "build": "vite build --config apps/web/vite.config.ts && tsc -p apps/web/tsconfig.node.json",
     "start": "node dist/apps/web/server/server.js",
     "preview": "vite preview --config apps/web/vite.config.ts",
-    "typecheck": "tsc -p tsconfig.base.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit",
+    "typecheck": "tsc -p packages/shared && tsc -p packages/storage && tsc -p packages/tools && tsc -p packages/agent-graph && tsc -p apps/web",
     "lint": "gts lint",
     "format": "gts fix",
     "test": "vitest run",
