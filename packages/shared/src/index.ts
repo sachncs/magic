@@ -1,5 +1,8 @@
 /**
- * @fileoverview Stub for @magic/shared. Real implementation lands in phase 1.
+ * @fileoverview Barrel for @magic/shared. Re-exports branded types, all
+ * type modules, the WS event union, and pricing.
  */
 
-export {};
+export * from './branded.js';
+export * from './types/index.js';
+export * from './events/index.js';
