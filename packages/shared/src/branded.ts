@@ -8,11 +8,13 @@
  * extract the underlying value.
  */
 
+declare const brand: unique symbol;
+
 /**
- * Phantom-typed opaque wrapper. The `__brand` field is a unique symbol per
- * brand name; the field never exists at runtime.
+ * Phantom-typed opaque wrapper. The `__brand` field is unique per brand name;
+ * the field never exists at runtime.
  */
-export type Branded<T, K extends string> = T & {readonly __brand: K};
+export type Branded<T, K extends string> = T & {readonly [brand]: K};
 
 /**
  * Brands a value. No runtime check; the brand is enforced by the type system.
@@ -65,9 +67,34 @@ export type MessageId = Branded<string, 'MessageId'>;
 export type DeliverableId = Branded<string, 'DeliverableId'>;
 
 /**
- * Branded string for a spill locator.
+ * Branded string for a spill locator (hash of spilled tool output).
  */
 export type SpillLocator = Branded<string, 'SpillLocator'>;
+
+/**
+ * Branded string for a tool call identifier.
+ */
+export type ToolCallId = Branded<string, 'ToolCallId'>;
+
+/**
+ * Branded string for a swarm identifier (e.g. 'coder', 'refactor').
+ */
+export type SwarmId = Branded<string, 'SwarmId'>;
+
+/**
+ * Branded string for a graph node identifier.
+ */
+export type NodeId = Branded<string, 'NodeId'>;
+
+/**
+ * Branded string for a queued task identifier.
+ */
+export type TaskId = Branded<string, 'TaskId'>;
+
+/**
+ * Branded string for a knowledge-base entry identifier.
+ */
+export type KbEntryId = Branded<string, 'KbEntryId'>;
 
 /**
  * Generates a new branded SessionId using crypto.randomUUID.
@@ -81,4 +108,63 @@ export function newSessionId(): SessionId {
  */
 export function newWorkspaceId(): WorkspaceId {
   return brand<string, 'WorkspaceId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded AgentId.
+ */
+export function newAgentId(): AgentId {
+  return brand<string, 'AgentId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded RepoId.
+ */
+export function newRepoId(): RepoId {
+  return brand<string, 'RepoId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded MessageId.
+ */
+export function newMessageId(): MessageId {
+  return brand<string, 'MessageId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded DeliverableId.
+ */
+export function newDeliverableId(): DeliverableId {
+  return brand<string, 'DeliverableId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded ToolCallId.
+ */
+export function newToolCallId(): ToolCallId {
+  return brand<string, 'ToolCallId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded TaskId.
+ */
+export function newTaskId(): TaskId {
+  return brand<string, 'TaskId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded KbEntryId.
+ */
+export function newKbEntryId(): KbEntryId {
+  return brand<string, 'KbEntryId'>(crypto.randomUUID());
+}
+
+/**
+ * Generates a new branded SpillLocator from a content hash.
+ *
+ * @param hash - The sha256 hex digest of the spilled content.
+ * @returns The branded locator.
+ */
+export function newSpillLocator(hash: string): SpillLocator {
+  return brand<string, 'SpillLocator'>(hash);
 }
