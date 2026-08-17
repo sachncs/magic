@@ -4,6 +4,19 @@
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cancellation": "./src/cancellation.ts",
+    "./checkpoints": "./src/checkpoints.ts",
+    "./cost_tracker": "./src/cost_tracker.ts",
+    "./graph_versioning": "./src/graph_versioning.ts",
+    "./memory/codebase_kb": "./src/memory/codebase_kb.ts",
+    "./model": "./src/model.ts",
+    "./sandbox_policy": "./src/sandbox_policy.ts",
+    "./commands": "./src/commands.ts",
+    "./permissions": "./src/permissions.ts",
+    "./prompts": "./src/prompts/index.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
