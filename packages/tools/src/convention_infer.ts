@@ -89,10 +89,10 @@ function namingConfidence(identifiers: ReadonlyArray<string>): number {
  * pass `(err, ...)` callbacks. Otherwise 'unknown'.
  */
 function inferErrorStyle(text: string): ErrorStyle {
-  if (/throw new \w+Error/.test(text) || /\braise \w+Error\b/.test(text)) {
+  if (/throw new\s+\w*Error\b/.test(text) || /\braise\s+\w*Error\b/.test(text)) {
     return 'throw';
   }
-  if (/return \{[^}]*error[:\s]/.test(text) || /Result<.*Error/.test(text)) {
+  if (/return\s+\{[^}]*error[:\s]/.test(text) || /Result<.*Error/.test(text)) {
     return 'result';
   }
   if (/function\s*\([^)]*err[^)]*\)\s*\{/.test(text) || /\(err,\s*[^)]+\)\s*=>/.test(text)) {
@@ -158,16 +158,28 @@ function inferImportStyle(text: string): ImportStyle {
 }
 
 /**
- * Extracts top-level identifiers from a TypeScript or JavaScript file.
+ * Extracts top-level identifiers from any source file. Matches:
+ *   - TypeScript/JavaScript: `function|class|interface|type|const|let|var|enum name`
+ *   - Python: `def name(`, `class name`, `name =` (module-level assignment)
+ *   - Go: `func name(`
  */
 function extractIdentifiers(text: string): string[] {
   const out: string[] = [];
-  const re = /(?:function|class|interface|type|const|let|var|enum)\s+([A-Za-z_$][\w$]*)/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text)) !== null) {
-    const id = m[1];
-    if (id !== undefined) {
-      out.push(id);
+  const patterns = [
+    /(?:function|class|interface|type|const|let|var|enum)\s+([A-Za-z_$][\w$]*)/g,
+    /(?:def|class)\s+([A-Za-z_][\w]*)\s*\(/g,
+    /^([A-Za-z_][\w]*)\s*=[^=]/gm, // module-level assignment (Python)
+    /func\s+([A-Za-z_][\w]*)\s*\(/g,
+    /func\s+\([^)]+\)\s+([A-Za-z_][\w]*)\s*\(/g, // Go method
+  ];
+  for (const re of patterns) {
+    let m: RegExpExecArray | null;
+    re.lastIndex = 0;
+    while ((m = re.exec(text)) !== null) {
+      const id = m[1];
+      if (id !== undefined && !out.includes(id)) {
+        out.push(id);
+      }
     }
   }
   return out;

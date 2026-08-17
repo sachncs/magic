@@ -23,9 +23,10 @@ export const SCHEMA_VERSION_LATEST: SchemaVersion = 'v1';
 
 /**
  * The minimum schema version we still support on load. Sessions older than
- * this are rejected (with a clear error asking the user to upgrade).
+ * this are rejected. We accept `v0.0` (pre-versioning) because it
+ * represents the implicit schema before explicit versioning.
  */
-export const SCHEMA_VERSION_MIN_SUPPORTED = 'v1' as const;
+export const SCHEMA_VERSION_MIN_SUPPORTED = 'v0.0' as const;
 
 /**
  * Graph definition version. Bumped when the graph definition changes

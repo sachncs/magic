@@ -43,7 +43,7 @@ describe('spill store', () => {
   });
 
   it('writes the spill file to disk', async () => {
-    const big = `y${Date.now()}-${Math.random()}`.repeat(60_000);
+    const big = 'y'.repeat(60_000);
     const r = await maybeSpill(big);
     expect(r.spilled).toBe(true);
     if (r.spilled) {

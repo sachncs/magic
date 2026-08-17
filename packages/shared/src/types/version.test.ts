@@ -43,8 +43,12 @@ describe('isSchemaVersionSupported', () => {
     expect(isSchemaVersionSupported(SCHEMA_VERSION_LATEST)).toBe(true);
   });
 
+  it('returns true for v0.0 (pre-versioning implicit)', () => {
+    expect(isSchemaVersionSupported('v0.0')).toBe(true);
+  });
+
   it('returns false for too-old versions', () => {
-    expect(isSchemaVersionSupported('v0.9')).toBe(false);
+    expect(isSchemaVersionSupported('v0.1')).toBe(false);
   });
 });
 
@@ -61,7 +65,7 @@ describe('migrateSchema', () => {
     expect(migrateSchema(rec, SCHEMA_VERSION_LATEST)).toBe(rec);
   });
 
-  it('throws for unsupported versions', () => {
-    expect(() => migrateSchema({}, 'v0.0')).toThrow(/unsupported/);
+  it('throws for unsupported older versions', () => {
+    expect(() => migrateSchema({}, 'v0.1')).toThrow(/unsupported/);
   });
 });

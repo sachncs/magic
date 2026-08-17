@@ -86,18 +86,20 @@ describe('meta atomic write + migration on read', () => {
   });
 
   it('migrates a v0.0 meta to v1 on read', async () => {
-    const {sessionMetaFile, ensureDataDir} = await import('./data_dir.js');
+    const {sessionMetaFile, ensureDataDir, sessionDir} = await import('./data_dir.js');
     await ensureDataDir();
+    const {mkdir} = await import('node:fs/promises');
+    await mkdir(sessionDir('sess-2'), {recursive: true});
     const oldMeta = {
       id: 'sess-2',
       workspaceId: 'ws-1',
-      repo: '/tmp/repo',
+      repo: '/r',
       task: 'old task',
       status: 'pending',
       createdAt: '2026-08-17T16:00:00.000Z',
       updatedAt: '2026-08-17T16:00:00.000Z',
       graphVersion: 'v1',
-      schemaVersion: 'v0.0', // pre-versioning shape
+      schemaVersion: 'v0.0', // pre-versioning
     };
     await writeFile(sessionMetaFile('sess-2'), JSON.stringify(oldMeta, null, 2));
     const {readMeta} = await import('./meta.js');

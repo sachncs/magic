@@ -166,5 +166,11 @@ describe('events versioning', () => {
   it('assertProtocolVersion throws on missing version', async () => {
     const {assertProtocolVersion} = await import('./events/versioning.js');
     expect(() => assertProtocolVersion({})).toThrow(/expected hello/);
+    // The actual error: throws about hello message format mismatch (v mismatch).
+  });
+  it('assertProtocolVersion throws on missing version (real path)', async () => {
+    const {assertProtocolVersion} = await import('./events/versioning.js');
+    // Missing version field triggers the hello message check.
+    expect(() => assertProtocolVersion({other: 'stuff'})).toThrow();
   });
 });
