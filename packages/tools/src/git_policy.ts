@@ -34,6 +34,7 @@ const SAFE_GIT_OPERATIONS: ReadonlyArray<string> = [
   'init',
   'clone',
   'pull',
+  'push', // denylist rejects `push --force` separately
 ];
 
 /**
@@ -62,6 +63,8 @@ export function isDestructiveGit(command: string): boolean {
 
 /**
  * Returns the git subcommand if the command starts with `git <sub> ...`.
+ * Skips git's global flags (`-C <path>`, `-c <name=value>`, `--exec-path`,
+ * `--bare`, etc.) and returns the first non-flag token.
  * Returns null if the command is not a git invocation.
  */
 export function parseGitSubcommand(command: string): string | null {
@@ -69,8 +72,24 @@ export function parseGitSubcommand(command: string): string | null {
   if (!trimmed.startsWith('git ')) {
     return null;
   }
+  // Known git global flags that take a value.
+  const FLAGS_WITH_VALUE = new Set(['-C', '-c', '--exec-path', '--git-dir', '--work-tree', '--namespace', '--super-prefix']);
   const parts = trimmed.slice(4).split(/\s+/);
-  return parts[0] ?? null;
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    if (p === undefined || p.length === 0) {
+      continue;
+    }
+    if (p.startsWith('-')) {
+      // Skip the flag's value if it takes one.
+      if (FLAGS_WITH_VALUE.has(p) || p.startsWith('--')) {
+        i++; // skip the value
+      }
+      continue;
+    }
+    return p;
+  }
+  return null;
 }
 
 /**

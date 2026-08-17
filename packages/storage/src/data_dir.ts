@@ -24,19 +24,11 @@ export function resolveDataDir(): string {
 }
 
 /**
- * Lazily-resolved root path. Computed once on first access.
- */
-let cachedRoot: string | undefined;
-
-/**
- * Returns the absolute path of the magic data root. Cached after first
- * call.
+ * Lazily-resolved root path. Computed on every call so env-var
+ * changes between tests are reflected.
  */
 export function dataDir(): string {
-  if (cachedRoot === undefined) {
-    cachedRoot = resolveDataDir();
-  }
-  return cachedRoot;
+  return resolveDataDir();
 }
 
 /**

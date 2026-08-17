@@ -70,8 +70,10 @@ async function readPnpmWorkspaces(root: string): Promise<string[] | null> {
 async function resolveGlobs(root: string, globs: string[]): Promise<string[]> {
   const out: string[] = [];
   for (const g of globs) {
-    if (g.endsWith('/*')) {
-      const dir = join(root, g.slice(0, -2));
+    // Strip surrounding quotes that pnpm-workspace.yaml uses.
+    const cleaned = g.replace(/^['"]|['"]$/g, '');
+    if (cleaned.endsWith('/*')) {
+      const dir = join(root, cleaned.slice(0, -2));
       try {
         const entries = await readdir(dir, {withFileTypes: true});
         for (const e of entries) {
@@ -83,7 +85,7 @@ async function resolveGlobs(root: string, globs: string[]): Promise<string[]> {
         // skip
       }
     } else {
-      out.push(join(root, g));
+      out.push(join(root, cleaned));
     }
   }
   return out;

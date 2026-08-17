@@ -6,19 +6,43 @@
 import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 import {buildModel, ModelNotConfiguredError} from '@magic/agent-graph/model';
 
+const PROVIDER_KEYS = [
+  'MAGIC_MODEL_PROVIDER',
+  'MAGIC_MODEL_BASE_URL',
+  'MAGIC_MODEL_NAME',
+  'MAGIC_MODEL_API_KEY',
+  'AWS_BEARER_TOKEN_BEDROCK',
+  'AWS_ACCESS_KEY_ID',
+  'AWS_PROFILE',
+  'AWS_REGION',
+  'MAGIC_BEDROCK_MODEL_ID',
+  'ANTHROPIC_API_KEY',
+  'OPENAI_API_KEY',
+  'GOOGLE_API_KEY',
+  'MINIMAX_API_KEY',
+  'MINIMAX_BASE_URL',
+  'MINIMAX_MODEL',
+];
+
 describe('e2e: model factory', () => {
-  const saved = {...process.env};
+  const savedValues = new Map<string, string | undefined>();
 
   beforeEach(() => {
-    for (const k of Object.keys(process.env)) {
-      if (k.startsWith('MAGIC_') || k.startsWith('AWS_') || k === 'ANTHROPIC_API_KEY' || k === 'OPENAI_API_KEY' || k === 'GOOGLE_API_KEY' || k.startsWith('MINIMAX_')) {
-        delete process.env[k];
-      }
+    for (const key of PROVIDER_KEYS) {
+      savedValues.set(key, process.env[key]);
+      delete process.env[key];
     }
   });
 
   afterEach(() => {
-    process.env = saved;
+    for (const [key, value] of savedValues) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    savedValues.clear();
   });
 
   it('local ollama', () => {
