@@ -12,7 +12,6 @@
     "@magic/shared": "*",
     "@magic/storage": "*",
     "@magic/tools": "*",
-    "@strands-agents/sdk": "*",
     "zod": "^3.23.0"
   },
   "devDependencies": {
