@@ -1,0 +1,22 @@
+{
+  "name": "tiny-todo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal TypeScript fixture used by magic e2e tests.",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "express": "^4.19.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^20.11.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

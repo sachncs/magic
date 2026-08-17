@@ -1,0 +1,17 @@
+{
+  "name": "magic-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:eval": "vitest run tests/eval",
+    "test:e2e:browser": "playwright test --config apps/web/playwright.config.ts",
+    "test:a11y": "playwright test --config apps/web/playwright.config.ts --grep @a11y"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "vitest": "^2.1.0"
+  }
+}
