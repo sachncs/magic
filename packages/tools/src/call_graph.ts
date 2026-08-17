@@ -7,7 +7,8 @@
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {readdir} from 'node:fs/promises';
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 const MAX_DEPTH = 3;
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
@@ -37,15 +38,20 @@ export interface CallGraphEdge {
  */
 const CALL_RE = /(?<![\w$.])([A-Za-z_$][\w$]*)\s*\(/g;
 
+interface DefInfo {
+  readonly line: number;
+  readonly callees: Set<string>;
+}
+
 /**
  * Extracts top-level function/method definitions and the calls they
  * contain. Returns a map: symbol -> callees, and an inverse map.
  */
 function extractGraph(text: string): {
-  readonly defs: Map<string, {line: number; callees: Set<string>}>;
+  readonly defs: Map<string, DefInfo>;
   readonly callsites: Map<string, Array<{file: string; line: number}>>;
 } {
-  const defs = new Map<string, {line: number; callees: Set<string>}>();
+  const defs = new Map<string, DefInfo>();
   const callsites = new Map<string, Array<{file: string; line: number}>>();
 
   const lines = text.split('\n');
@@ -57,19 +63,14 @@ function extractGraph(text: string): {
     const line = lines[i] ?? '';
     const fnMatch = /^(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/.exec(line);
     if (fnMatch !== null) {
-      currentFn = fnMatch[1];
-      currentCallees = new Set();
-      currentLine = i + 1;
-      defs.set(currentFn, {line: currentLine, callees: currentCallees});
-      continue;
-    }
-    const methodMatch = /^\s+(?:public\s+|private\s+|protected\s+|async\s+|static\s+)*([A-Za-z_$][\w$]*)\s*\(/.exec(line);
-    if (methodMatch !== null && currentFn !== undefined) {
-      // Treat as a method; record under method name.
-      const name = methodMatch[1] ?? '';
-      if (!defs.has(name)) {
-        defs.set(name, {line: i + 1, callees: new Set()});
+      const name = fnMatch[1];
+      if (name !== undefined) {
+        currentFn = name;
+        currentCallees = new Set();
+        currentLine = i + 1;
+        defs.set(name, {line: currentLine, callees: currentCallees});
       }
+      continue;
     }
     if (currentFn !== undefined && currentCallees !== undefined) {
       CALL_RE.lastIndex = 0;
@@ -145,6 +146,13 @@ async function extractRepoGraph(root: string): Promise<{
   return {defs, callsites};
 }
 
+const inputSchema = z.object({
+  path: z.string(),
+  symbol: z.string(),
+  direction: z.enum(['callers', 'callees', 'both']).optional(),
+  depth: z.number().int().positive().optional(),
+});
+
 /**
  * The `call_graph` tool.
  */
@@ -152,13 +160,8 @@ export const callGraphTool = tool({
   name: 'call_graph',
   description:
     'Return the caller/callee graph for a symbol up to N hops. Returns {callers, callees}.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    path: string;
-    symbol: string;
-    direction?: 'callers' | 'callees' | 'both';
-    depth?: number;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const dir = input.direction ?? 'both';
       const depth = Math.min(MAX_DEPTH, input.depth ?? 1);

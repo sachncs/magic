@@ -30,7 +30,9 @@ const sessions = new Map<SessionId, SessionAccumulator>();
 /**
  * Per-process global cap (USD). Read once from env.
  */
-const GLOBAL_CAP_USD = Number.parseFloat(process.env['MAGIC_COST_CAP_USD'] ?? '0') || 0;
+function readGlobalCap(): number {
+  return Number.parseFloat(process.env['MAGIC_COST_CAP_USD'] ?? '0') || 0;
+}
 
 let globalCost = 0;
 
@@ -111,7 +113,7 @@ export function checkCap(sessionId: SessionId): void {
   if (acc.capUsd > 0 && acc.costUsd >= acc.capUsd) {
     throw new CostExceededError(sessionId, 'session');
   }
-  if (GLOBAL_CAP_USD > 0 && globalCost >= GLOBAL_CAP_USD) {
+  if (readGlobalCap() > 0 && globalCost >= readGlobalCap()) {
     throw new CostExceededError(sessionId, 'global');
   }
 }
@@ -122,4 +124,6 @@ export function checkCap(sessionId: SessionId): void {
 export function __resetCostTrackerForTests(): void {
   sessions.clear();
   globalCost = 0;
+  // The global cap is read from env at every call so it picks up
+  // changes between tests.
 }

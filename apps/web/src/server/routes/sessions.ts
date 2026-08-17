@@ -14,13 +14,11 @@ import {
   writeMeta,
   createStorage,
   cloneOrAttach,
-  newSessionId,
-  newWorkspaceId,
   generateAndPersistTitle,
   type TitleModel,
 } from '@magic/storage';
 import {buildModel} from '@magic/agent-graph/model';
-import {brand, type SessionId, type WorkspaceId} from '@magic/shared/branded';
+import {brand, newSessionId, newWorkspaceId, type SessionId, type WorkspaceId} from '@magic/shared/branded';
 
 const sessionsRoutes: FastifyPluginAsync = async (app) => {
   const storage = createStorage();

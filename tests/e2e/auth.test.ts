@@ -9,9 +9,10 @@ import {
   validateWsToken,
   WsAuthError,
   WS_CLOSE_UNAUTHORIZED,
+  revokeWsToken,
   type WsToken,
 } from '@magic/web-shared/ws_auth';
-import {brand, newSessionId} from '@magic/shared/branded';
+import {newSessionId} from '@magic/shared/branded';
 
 describe('e2e: WS auth', () => {
   it('rejects missing token', () => {
@@ -41,7 +42,6 @@ describe('e2e: WS auth', () => {
     const id = newSessionId();
     const t = issueWsToken(id);
     expect(validateWsToken(t, id)).toBe(id);
-    const {revokeWsToken} = require('@magic/web-shared/ws_auth');
     revokeWsToken(t);
     expect(() => validateWsToken(t, id)).toThrow('invalid');
   });

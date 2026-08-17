@@ -48,7 +48,8 @@ export interface SessionCost {
 /**
  * Schema version string. Format: `vMAJOR.MINOR`. See `types/version.ts`.
  */
-export type SchemaVersion = string;
+export type {SchemaVersion} from './version.js';
+export {SCHEMA_VERSION_LATEST} from './version.js';
 
 /**
  * Graph definition version. Bumped when agent definitions or routing change.

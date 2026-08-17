@@ -7,7 +7,8 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {readdir, readFile, stat} from 'node:fs/promises';
 import {join, relative} from 'node:path';
-import {tool, ok, type ToolResult} from '../tool.js';
+import {z} from 'zod';
+import {tool, ok} from '../tool.js';
 import {detectHarness} from './harness.js';
 
 const execFileAsync = promisify(execFile);
@@ -43,7 +44,7 @@ async function secretScan(root: string): Promise<Finding[]> {
       return;
     }
     if (text.includes('\u0000')) {
-      return; // binary
+      return;
     }
     const rel = relative(root, file);
     const lines = text.split('\n');
@@ -52,14 +53,15 @@ async function secretScan(root: string): Promise<Finding[]> {
       for (const {name, re} of SECRET_PATTERNS) {
         re.lastIndex = 0;
         if (re.test(line)) {
-          findings.push({
+          const finding: Finding = {
             kind: 'secret',
             severity: 'critical',
             title: name,
             description: 'Secret-shaped string detected. Rotate immediately if real.',
             file: rel,
             line: i + 1,
-          });
+          };
+          findings.push(finding);
         }
       }
     }
@@ -125,14 +127,17 @@ async function npmAudit(root: string): Promise<Finding[]> {
     const vulns = parsed.vulnerabilities ?? {};
     const out: Finding[] = [];
     for (const [name, info] of Object.entries(vulns)) {
-      out.push({
+      const finding: Finding = {
         kind: 'vulnerability',
         severity:
-          (info.severity as 'low' | 'moderate' | 'high' | 'critical' | undefined) ??
-          'moderate',
+          (info.severity as 'low' | 'moderate' | 'high' | 'critical' | undefined) ?? 'moderate',
         title: info.title ?? name,
-        description: info.url,
-      });
+      };
+      if (info.url !== undefined) {
+        out.push({...finding, description: info.url});
+      } else {
+        out.push(finding);
+      }
     }
     return out;
   } catch {
@@ -148,16 +153,24 @@ async function pipAudit(root: string): Promise<Finding[]> {
       timeout: 60_000,
     });
     const parsed = JSON.parse(stdout) as Array<{name?: string; id?: string; fix_versions?: string[]}>;
-    return parsed.map((v) => ({
-      kind: 'vulnerability' as const,
-      severity: 'moderate' as const,
-      title: v.name ?? v.id ?? 'unknown',
-      description: v.fix_versions?.join(', '),
-    }));
+    return parsed.map((v): Finding => {
+      const finding: Finding = {
+        kind: 'vulnerability',
+        severity: 'moderate',
+        title: v.name ?? v.id ?? 'unknown',
+      };
+      const fixVersions = v.fix_versions?.join(', ');
+      if (fixVersions !== undefined && fixVersions.length > 0) {
+        return {...finding, description: fixVersions};
+      }
+      return finding;
+    });
   } catch {
     return [];
   }
 }
+
+const inputSchema = z.object({path: z.string()});
 
 /**
  * The `repo_security` tool.
@@ -166,8 +179,8 @@ export const repoSecurityTool = tool({
   name: 'repo_security',
   description:
     'Run security scans on a repository: dependency audit (npm/pip) + secret-pattern regex scan. Returns a list of findings.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{path: string}>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const harness = await detectHarness(input.path);
       const findings: Finding[] = [];

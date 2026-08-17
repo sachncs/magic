@@ -33,24 +33,21 @@ import {
   fetchDocTool,
   playwrightTool,
   bashTool,
-  detectHarness,
   inferConventions,
 } from '@magic/tools';
+import {detectHarness} from '@magic/tools/harness';
 import {addKbEntry, getKbEntry} from '../memory/codebase_kb.js';
 import {recordUsage, getSessionCost, checkCap, CostExceededError} from '../cost_tracker.js';
 import {getCurrentPolicy} from '../sandbox_policy.js';
 import {checkGitCommand} from '@magic/tools/git_policy';
-import type {SessionId, WorkspaceId, ToolCallId, newToolCallId} from '@magic/shared/branded';
+import {newToolCallId, type SessionId, type WorkspaceId, type ToolCallId} from '@magic/shared/branded';
 
 /**
- * Helper: build a synthetic tool call id (until @magic/shared exports newToolCallId).
+ * Helper: build a synthetic tool call id.
  */
 function tcid(): ToolCallId {
-  // Uses a runtime check; falls back to crypto. Avoids an import cycle.
-  return `tc-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}` as ToolCallId;
+  return newToolCallId();
 }
-
-void ({} as typeof newToolCallId);
 
 /**
  * Indexer agent. Wraps `repo_index`; on success emits a RepoManifest

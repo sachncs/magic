@@ -6,7 +6,8 @@
  * and a deterministic stub for tests.
  */
 
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 /**
  * The shape of a Playwright action. Concrete actions are dispatched
@@ -61,6 +62,16 @@ function currentClient(): PlaywrightClient {
   return _client;
 }
 
+const actionSchema = z.union([
+  z.object({kind: z.literal('navigate'), url: z.string()}),
+  z.object({kind: z.literal('click'), selector: z.string()}),
+  z.object({kind: z.literal('screenshot'), fullPage: z.boolean().optional()}),
+  z.object({kind: z.literal('evaluate'), expression: z.string()}),
+  z.object({kind: z.literal('console')}),
+]);
+
+const inputSchema = z.object({action: actionSchema});
+
 /**
  * The `playwright` tool. Dispatches actions to the active client.
  */
@@ -68,10 +79,8 @@ export const playwrightTool = tool({
   name: 'playwright',
   description:
     'Run a Playwright action in a headless browser. Supports navigate/click/screenshot/evaluate/console. Useful for reproducing UI bugs.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    action: PlaywrightAction;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const r = await currentClient().run(input.action);
       return ok(JSON.stringify(r, null, 2));

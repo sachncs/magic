@@ -7,12 +7,13 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {tool, ok, err, type ToolResult} from '../tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from '../tool.js';
 
 const execFileAsync = promisify(execFile);
 
 const MAX_RESULTS = 200;
-const MAX_FILE_BYTES = 2 * 1024 * 1024; // skip files > 2 MB
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 interface SearchHit {
   readonly file: string;
@@ -21,6 +22,14 @@ interface SearchHit {
   readonly context: ReadonlyArray<string>;
 }
 
+const inputSchema = z.object({
+  path: z.string(),
+  query: z.string(),
+  globs: z.array(z.string()).optional(),
+  context: z.number().int().nonnegative().optional(),
+  maxResults: z.number().int().positive().optional(),
+});
+
 /**
  * The `repo_search` tool.
  */
@@ -28,22 +37,17 @@ export const repoSearchTool = tool({
   name: 'repo_search',
   description:
     'Search a repository for a string or regex. Returns matches with file, line, and a few lines of context. Prefers rg when installed.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    path: string;
-    query: string;
-    globs?: string[];
-    context?: number;
-    maxResults?: number;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const limit = input.maxResults ?? MAX_RESULTS;
       const ctx = input.context ?? 2;
-      const hits = await searchWithRg(input.path, input.query, input.globs ?? [], ctx, limit);
+      const globs = input.globs ?? [];
+      const hits = await searchWithRg(input.path, input.query, globs, ctx, limit);
       if (hits !== null) {
         return ok(JSON.stringify({hits: hits.slice(0, limit), count: hits.length}, null, 2));
       }
-      const fallback = await searchWithJs(input.path, input.query, input.globs ?? [], ctx, limit);
+      const fallback = await searchWithJs(input.path, input.query, globs, ctx, limit);
       return ok(JSON.stringify({hits: fallback, count: fallback.length}, null, 2));
     } catch (e) {
       return err(`repo_search failed: ${(e as Error).message}`);
@@ -108,7 +112,6 @@ async function searchWithRg(
     if (code === 'ENOENT') {
       return null;
     }
-    // rg exit code 1 = no matches (not an error).
     if ((e as {code?: number}).code === 1) {
       return [];
     }

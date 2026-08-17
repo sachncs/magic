@@ -5,7 +5,8 @@
 
 import {readFile, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 interface DetectedPackage {
   name: string;
@@ -38,7 +39,6 @@ async function readJson(path: string): Promise<unknown> {
 async function readPnpmWorkspaces(root: string): Promise<string[] | null> {
   try {
     const text = await readFile(join(root, 'pnpm-workspace.yaml'), 'utf8');
-    // Very small parser: extract `packages:` block lines beginning with `- `.
     const lines = text.split('\n');
     let inPackages = false;
     const out: string[] = [];
@@ -141,7 +141,6 @@ export async function detectMonorepo(root: string): Promise<MonorepoResult | nul
     );
     return {type: 'pnpm', packages};
   }
-  // npm/yarn workspaces: look at root package.json's `workspaces` field.
   const rootPkg = (await readJson(join(root, 'package.json'))) as
     | {workspaces?: string[] | {packages?: string[]}}
     | null;
@@ -163,6 +162,8 @@ export async function detectMonorepo(root: string): Promise<MonorepoResult | nul
   return null;
 }
 
+const inputSchema = z.object({path: z.string()});
+
 /**
  * The `monorepo_index` tool.
  */
@@ -170,8 +171,8 @@ export const monorepoIndexTool = tool({
   name: 'monorepo_index',
   description:
     'Detect whether a repository is a monorepo (pnpm/npm/yarn/turbo/nx) and return per-package metadata.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{path: string}>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const r = await detectMonorepo(input.path);
       if (r === null) {

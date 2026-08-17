@@ -6,12 +6,15 @@
 
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {tool, ok, err, type ToolResult} from '../tool.js';
+import {z} from 'zod';
+import {tool, ok} from '../tool.js';
 import {detectHarness} from './harness.js';
 
 const execFileAsync = promisify(execFile);
 
 const DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
+
+const inputSchema = z.object({path: z.string()});
 
 /**
  * The `repo_lint` tool.
@@ -20,8 +23,8 @@ export const repoLintTool = tool({
   name: 'repo_lint',
   description:
     'Run the detected lint command for a repository. Returns {ok, output}.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{path: string}>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const harness = await detectHarness(input.path);
       if (harness.lint === undefined) {

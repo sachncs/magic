@@ -37,6 +37,18 @@ const SAFE_GIT_OPERATIONS: ReadonlyArray<string> = [
 ];
 
 /**
+ * Returns true if the command is safe to run (not in the denylist).
+ */
+export function isCommandSafe(command: string): boolean {
+  for (const re of DESTRUCTIVE_GIT_DENYLIST) {
+    if (re.test(command)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Returns true if the command is a destructive git operation.
  */
 export function isDestructiveGit(command: string): boolean {
@@ -57,7 +69,6 @@ export function parseGitSubcommand(command: string): string | null {
   if (!trimmed.startsWith('git ')) {
     return null;
   }
-  // Strip leading "git " then take the next token (the subcommand).
   const parts = trimmed.slice(4).split(/\s+/);
   return parts[0] ?? null;
 }

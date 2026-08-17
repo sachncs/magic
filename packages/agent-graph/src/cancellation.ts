@@ -5,8 +5,7 @@
  * snapshot stored in `${dataDir}/undo/<path>.<ts>`.
  */
 
-import {writeFile, copyFile, stat} from 'node:fs/promises';
-import {mkdir} from 'node:fs/promises';
+import {writeFile, copyFile, stat, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {dataDir} from '@magic/storage/data_dir';
 
@@ -41,7 +40,9 @@ export async function beginEdit(
   }
   const controller = new AbortController();
   if (signal !== undefined) {
-    signal.addEventListener('abort', () => controller.abort(signal.reason));
+    signal.addEventListener('abort', () => {
+      controller.abort(signal.reason);
+    });
   }
   inflight.set(path, {path, snapshotPath, abortController: controller, startedAt: ts});
   return {snapshotPath, signal: controller.signal};
@@ -89,3 +90,5 @@ export async function cancelAll(): Promise<number> {
   }
   return n;
 }
+
+void writeFile;

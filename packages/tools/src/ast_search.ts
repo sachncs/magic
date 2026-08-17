@@ -9,9 +9,10 @@
  */
 
 import {readFile} from 'node:fs/promises';
-import {join, isAbsolute} from 'node:path';
+import {join} from 'node:path';
 import {readdir, stat} from 'node:fs/promises';
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 import {languageIdSchema, type LanguageId} from '@magic/shared/types/repo';
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
@@ -192,6 +193,12 @@ async function walkSymbols(
   return hits;
 }
 
+const inputSchema = z.object({
+  path: z.string(),
+  query: z.string(),
+  language: languageIdSchema.optional(),
+});
+
 /**
  * The `ast_search` tool.
  */
@@ -199,18 +206,11 @@ export const astSearchTool = tool({
   name: 'ast_search',
   description:
     'Search for symbols (functions, classes, interfaces, types) by name across a repo. Language-aware (TS, JS, Python, Go).',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    path: string;
-    query: string;
-    language?: string;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
-      const root = isAbsolute(input.path) ? input.path : input.path;
-      const lang = input.language !== undefined ? languageIdSchema.parse(input.language) : undefined;
-      const all = await walkSymbols(root, input.query);
-      const filtered = lang === undefined ? all : all.filter(() => true); // language hint reserved
-      return ok(JSON.stringify({hits: filtered.slice(0, 100), count: filtered.length}, null, 2));
+      const all = await walkSymbols(input.path, input.query);
+      return ok(JSON.stringify({hits: all.slice(0, 100), count: all.length}, null, 2));
     } catch (e) {
       return err(`ast_search failed: ${(e as Error).message}`);
     }

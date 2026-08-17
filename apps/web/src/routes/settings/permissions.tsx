@@ -3,9 +3,7 @@
  * read-only / workspace-write / danger-full-access.
  */
 
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Label} from '@/components/ui/label';
-import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs';
+import {Card, CardContent, CardHeader, CardTitle, Label, Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui';
 import {useState} from 'react';
 
 export function SettingsPermissions() {

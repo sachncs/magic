@@ -7,7 +7,7 @@ import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 import {mkdtemp, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {maybeSpill, retrieveSpill, unbrand} from '@magic/tools';
+import {maybeSpill, retrieveSpill} from '@magic/tools/spill_store';
 
 describe('e2e: spill store', () => {
   let work: string;
@@ -45,6 +45,5 @@ describe('e2e: spill store', () => {
     }
     const back = await retrieveSpill(r.record.locator);
     expect(back).toBe(big);
-    void unbrand;
   });
 });

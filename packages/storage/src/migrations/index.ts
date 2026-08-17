@@ -14,9 +14,9 @@ import {
   migrateSchema,
   SCHEMA_VERSION_LATEST,
   SCHEMA_VERSION_MIN_SUPPORTED,
-  type SchemaVersion,
 } from '@magic/shared/types/version';
-import {sessionMetaFile} from './data_dir.js';
+import type {SchemaVersion} from '@magic/shared/types/version';
+import {sessionMetaFile} from '../data_dir.js';
 
 /**
  * Migrates a session's `meta.json` to the current schema. Returns true

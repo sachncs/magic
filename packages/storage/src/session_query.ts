@@ -18,7 +18,7 @@ import {
  * A single search hit.
  */
 export interface SearchHit {
-  readonly sessionId: SessionId;
+  readonly sessionId: SessionId | string;
   readonly recordId: string;
   readonly snippet: string;
   readonly score: number;

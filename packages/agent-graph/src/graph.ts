@@ -25,9 +25,24 @@ import {recordUsage, getSessionCost, checkCap} from './cost_tracker.js';
 import type {SessionId, WorkspaceId} from '@magic/shared/branded';
 
 /**
- * A graph node: either a single agent or a swarm.
+ * A graph node: either a single agent or a swarm. The `run` method is
+ * common to both; `runner` is on agents only and is the single-agent
+ * entry point.
  */
-export type GraphNode = MagicAgent | {kind: 'swarm'; agents: ReadonlyArray<MagicAgent>; run: (state: InvocationState, message: string) => Promise<AgentResult>};
+export type GraphNode =
+  | MagicAgent
+  | {
+      readonly kind: 'swarm';
+      readonly agents: ReadonlyArray<MagicAgent>;
+      readonly run: (state: InvocationState, message: string) => Promise<AgentResult>;
+    };
+
+/**
+ * Type guard: is this node a single agent?
+ */
+function isAgent(node: GraphNode): node is MagicAgent {
+  return 'runner' in node;
+}
 
 /**
  * A directed edge in the graph: source node id, target node id, optional
@@ -165,11 +180,11 @@ async function runNode(
   message: string,
   prev: AgentResult,
 ): Promise<AgentResult> {
-  if ('run' in node && node.kind === 'swarm') {
-    return node.run(state, message);
+  if (isAgent(node)) {
+    const input = {state, message: prev.text || message, previousOutput: prev.text};
+    return node.runner(input);
   }
-  const input = {state, message: prev.text || message, previousOutput: prev.text};
-  return node.runner(input);
+  return node.run(state, message);
 }
 
 /**

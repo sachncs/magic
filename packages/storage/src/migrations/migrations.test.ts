@@ -23,7 +23,7 @@ describe('migrateSession', () => {
   });
 
   it('returns false and does not modify a session at the latest version', async () => {
-    const {dataDir, ensureDataDir} = await import('./data_dir.js');
+    const {dataDir, ensureDataDir} = await import('../data_dir.js');
     await ensureDataDir();
     const sessionId = 'sess-latest';
     const dir = join(dataDir(), 'sessions', sessionId);
@@ -48,7 +48,7 @@ describe('migrateSession', () => {
   });
 
   it('migrates a v0.0 session to v1 and writes back', async () => {
-    const {dataDir, ensureDataDir} = await import('./data_dir.js');
+    const {dataDir, ensureDataDir} = await import('../data_dir.js');
     await ensureDataDir();
     const sessionId = 'sess-old';
     const dir = join(dataDir(), 'sessions', sessionId);
@@ -65,7 +65,7 @@ describe('migrateSession', () => {
       schemaVersion: 'v0.0', // pre-versioning
     };
     await writeFile(join(dir, 'meta.json'), JSON.stringify(old, null, 2));
-    const {migrateSession} = await import('./migrations/index.js');
+    const {migrateSession} = await import('./index.js');
     const result = await migrateSession(sessionId);
     expect(result).toBe(true);
     const after = JSON.parse(await readFile(join(dir, 'meta.json'), 'utf8'));
@@ -74,7 +74,7 @@ describe('migrateSession', () => {
   });
 
   it('returns false for non-existent session', async () => {
-    const {migrateSession} = await import('./migrations/index.js');
+    const {migrateSession} = await import('./index.js');
     expect(await migrateSession('does-not-exist')).toBe(false);
   });
 });

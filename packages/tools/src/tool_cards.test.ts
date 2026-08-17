@@ -11,8 +11,8 @@ import {ok, type ToolResult} from './tool.js';
 describe('tool_cards (replay-safety)', () => {
   it('presentGeneric is deterministic', () => {
     const args = {a: 1, b: 2};
-    const v1 = presentGeneric(args);
-    const v2 = presentGeneric(args);
+    const v1 = presentGeneric<{a: number; b: number}>(args, ok('r'));
+    const v2 = presentGeneric<{a: number; b: number}>(args, ok('r'));
     expect(v1).toEqual(v2);
   });
 

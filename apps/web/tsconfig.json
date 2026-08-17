@@ -1,10 +1,20 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "noEmit": true
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@magic/shared": ["../../packages/shared/src"],
+      "@magic/storage": ["../../packages/storage/src"],
+      "@magic/tools": ["../../packages/tools/src"],
+      "@magic/agent-graph": ["../../packages/agent-graph/src"],
+      "@magic/web-shared": ["../../packages/web-shared/src"]
+    },
+    "types": ["vite/client", "node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

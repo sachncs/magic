@@ -10,6 +10,7 @@ import {join} from 'node:path';
 import {randomBytes} from 'node:crypto';
 import {sessionMetaSchema, type SessionMeta} from '@magic/shared/types/session';
 import {migrateSchema, SCHEMA_VERSION_LATEST} from '@magic/shared/types/version';
+import type {SchemaVersion} from '@magic/shared/types/version';
 import {ensureDataDir, sessionMetaFile, sessionDir} from './data_dir.js';
 
 /**
@@ -57,7 +58,7 @@ export async function writeMeta(id: string, meta: SessionMeta): Promise<void> {
   // Re-parse to ensure we always write the latest shape.
   const validated = sessionMetaSchema.parse({
     ...meta,
-    schemaVersion: SCHEMA_VERSION_LATEST,
+    schemaVersion: SCHEMA_VERSION_LATEST as unknown as SchemaVersion,
     updatedAt: new Date().toISOString(),
   });
   const json = JSON.stringify(validated, null, 2);

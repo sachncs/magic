@@ -11,8 +11,8 @@
 import type {SessionId, WorkspaceId, SwarmId, NodeId, ToolCallId} from '@magic/shared/branded';
 import type {WsEvent} from '@magic/shared/events';
 import type {RepoManifest} from '@magic/shared/types/repo';
-import type {InferredConventions} from '@magic/tools/convention_infer';
-import type {ToolDefinition} from '@magic/tools/tool';
+import type {InferredConventions} from '@magic/tools';
+import type {ToolDefinition} from '@magic/tools';
 
 /**
  * The shared invocation state passed to every agent. Read-only from
@@ -72,6 +72,15 @@ export interface AgentResult {
 export type AgentRunner = (input: AgentInput) => Promise<AgentResult>;
 
 /**
+ * A looser type that accepts any tool regardless of its specific zod
+ * schema. Used at agent / graph boundaries where variance prevents
+ * carrying the per-tool schema type through. Uses `any` for the
+ * schema because `ZodType` is invariant and TS rejects the widening.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyTool = ToolDefinition<any>;
+
+/**
  * The metadata the graph needs to schedule an agent.
  */
 export interface MagicAgent {
@@ -79,7 +88,7 @@ export interface MagicAgent {
   readonly swarmId?: SwarmId;
   readonly description: string;
   readonly systemPrompt: string;
-  readonly tools: ReadonlyArray<ToolDefinition<unknown>>;
+  readonly tools: ReadonlyArray<AnyTool>;
   readonly runner: AgentRunner;
 }
 
@@ -92,7 +101,7 @@ export function defineAgent(def: {
   swarmId?: string;
   description: string;
   systemPrompt: string;
-  tools: ReadonlyArray<ToolDefinition<unknown>>;
+  tools: ReadonlyArray<AnyTool>;
   runner: AgentRunner;
 }): MagicAgent {
   return {

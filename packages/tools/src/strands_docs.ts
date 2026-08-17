@@ -10,7 +10,8 @@
  * mock for testing without `uvx` installed.
  */
 
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 /**
  * A single search hit from the docs server.
@@ -52,14 +53,16 @@ export class StubDocsClient implements DocsClient {
   }
 }
 
+const searchDocsSchema = z.object({query: z.string()});
+
 /**
  * The `search_docs` tool. Wraps the MCP client's `searchDocs`.
  */
 export const searchDocsTool = tool({
   name: 'search_docs',
   description: 'Search the Strands Agents documentation for a query. Returns ranked hits.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{query: string}>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema: searchDocsSchema,
+  callback: async (input) => {
     try {
       const client = currentDocsClient();
       const hits = await client.searchDocs(input.query);
@@ -70,14 +73,16 @@ export const searchDocsTool = tool({
   },
 });
 
+const fetchDocSchema = z.object({path: z.string()});
+
 /**
  * The `fetch_doc` tool. Wraps the MCP client's `fetchDoc`.
  */
 export const fetchDocTool = tool({
   name: 'fetch_doc',
   description: 'Fetch the full content of a Strands docs page by path.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{path: string}>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema: fetchDocSchema,
+  callback: async (input) => {
     try {
       const client = currentDocsClient();
       const text = await client.fetchDoc(input.path);

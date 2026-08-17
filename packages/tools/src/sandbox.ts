@@ -7,7 +7,8 @@
 import {execFile, spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {env} from 'node:process';
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -70,6 +71,12 @@ export function isCommandSafe(command: string): boolean {
   return true;
 }
 
+const inputSchema = z.object({
+  repoPath: z.string(),
+  command: z.string(),
+  timeoutMs: z.number().int().positive().optional(),
+});
+
 /**
  * The `bash` tool. Runs shell commands inside the repo CWD with the
  * destructive denylist enforced.
@@ -78,12 +85,8 @@ export const bashTool = tool({
   name: 'bash',
   description:
     'Run a shell command inside the repository working directory. Refuses destructive commands (rm -rf /, mkfs, dd of=/dev, etc).',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    repoPath: string;
-    command: string;
-    timeoutMs?: number;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     if (!isCommandSafe(input.command)) {
       return err(`refused: command matches destructive denylist`);
     }

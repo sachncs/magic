@@ -8,6 +8,7 @@ import {readdir, stat} from 'node:fs/promises';
 import {join, relative, sep, posix} from 'node:path';
 import {createHash} from 'node:crypto';
 import ignore from 'ignore';
+import {z} from 'zod';
 import {
   languageIdSchema,
   type LanguageId,
@@ -16,7 +17,7 @@ import {
   type HarnessCommands,
 } from '@magic/shared/types/repo';
 import {detectHarness} from './harness.js';
-import {tool, ok, err, type ToolResult} from '../tool.js';
+import {tool, ok, err} from '../tool.js';
 
 const MAX_FILES = 50_000;
 const MAX_DEPTH = 16;
@@ -143,6 +144,8 @@ function hashManifest(manifest: Omit<RepoManifest, 'manifestHash'>): string {
   return createHash('sha256').update(canonical).digest('hex');
 }
 
+const inputSchema = z.object({path: z.string()});
+
 /**
  * The `repo_index` tool. Walks a repo and returns a `RepoManifest`.
  */
@@ -150,8 +153,8 @@ export const repoIndexTool = tool({
   name: 'repo_index',
   description:
     'Walk a repository and return a RepoManifest describing its files, languages, dependencies, and detected build/test/lint commands. Respects .gitignore.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{path: string}>,
-  callback: async (input: {path: string}): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const ig = await loadGitignore(input.path);
       const files = await walk(input.path, ig);
@@ -164,13 +167,13 @@ export const repoIndexTool = tool({
       ];
       const harness = await detectHarness(input.path);
       const partial: Omit<RepoManifest, 'manifestHash'> = {
-        id: 'pending', // Assigned by storage layer
+        id: 'pending',
         rootPath: input.path,
         indexedAt: new Date().toISOString(),
         files,
         languages,
-        dependencies: {}, // populated by future patch
-        scripts: {}, // populated by future patch
+        dependencies: {},
+        scripts: {},
         harness,
       };
       const manifestHash = hashManifest(partial);
@@ -181,3 +184,5 @@ export const repoIndexTool = tool({
     }
   },
 });
+
+void inputSchema;

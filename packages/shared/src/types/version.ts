@@ -11,10 +11,15 @@
 import {z} from 'zod';
 
 /**
+ * Schema version string. Format: `vMAJOR.MINOR`.
+ */
+export type SchemaVersion = string;
+
+/**
  * The current schema version. Bump when SessionMeta / RepoManifest change
  * in a way that requires a migration.
  */
-export const SCHEMA_VERSION_LATEST = 'v1' as const;
+export const SCHEMA_VERSION_LATEST: SchemaVersion = 'v1';
 
 /**
  * The minimum schema version we still support on load. Sessions older than

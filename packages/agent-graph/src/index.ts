@@ -10,6 +10,7 @@ export * from './permissions.js';
 export * from './sandbox_policy.js';
 export * from './commands.js';
 export * from './cost_tracker.js';
+export {__resetCostTrackerForTests} from './cost_tracker.js';
 export * from './cancellation.js';
 export * from './checkpoints.js';
 export * from './graph_versioning.js';

@@ -6,9 +6,18 @@
 
 import {readFile, stat} from 'node:fs/promises';
 import {join, isAbsolute} from 'node:path';
-import {tool, ok, err, type ToolResult} from '../tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from '../tool.js';
 
 const DEFAULT_MAX_BYTES = 200_000;
+
+const inputSchema = z.object({
+  path: z.string(),
+  file: z.string(),
+  startLine: z.number().int().positive().optional(),
+  endLine: z.number().int().positive().optional(),
+  maxBytes: z.number().int().positive().optional(),
+});
 
 /**
  * The `repo_read` tool.
@@ -17,14 +26,8 @@ export const repoReadTool = tool({
   name: 'repo_read',
   description:
     'Read a file (or a line range within it) from a repository. Caps output at 200 KB by default. Returns content with 1-based line numbers.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    path: string;
-    file: string;
-    startLine?: number;
-    endLine?: number;
-    maxBytes?: number;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const abs = isAbsolute(input.file) ? input.file : join(input.path, input.file);
       const s = await stat(abs);

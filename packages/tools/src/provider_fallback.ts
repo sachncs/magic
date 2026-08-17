@@ -6,7 +6,7 @@
 
 import {env} from 'node:process';
 import type {ProviderId} from '@magic/shared/types/pricing';
-import {withRetry, isRetryable, backoffMs, type RetryOptions} from './retry.js';
+import {withRetry, isRetryable, backoffMs} from './retry.js';
 
 /**
  * Parses `MAGIC_PROVIDER_FALLBACK` into an ordered list. Returns
@@ -114,5 +114,3 @@ export async function withFallback<T>(opts: FallbackOptions): Promise<T> {
   }
   throw lastErr;
 }
-
-void {} as RetryOptions;

@@ -74,7 +74,6 @@ export async function withFileLock<T>(
     if (locks.get(key) === prev.then(() => next)) {
       locks.delete(key);
     }
-    // 'second' winner is implicit: whichever call lands last is the winner.
     await appendAudit({
       ts: new Date().toISOString(),
       path,

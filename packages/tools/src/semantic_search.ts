@@ -8,7 +8,8 @@
 
 import {readFile, readdir, stat} from 'node:fs/promises';
 import {join} from 'node:path';
-import {tool, ok, err, type ToolResult} from './tool.js';
+import {z} from 'zod';
+import {tool, ok, err} from './tool.js';
 
 const MAX_FILES = 200;
 const MAX_FILE_BYTES = 1_000_000;
@@ -114,6 +115,12 @@ function rank(query: string, index: Map<string, Map<string, number>>): Array<{
   return out.slice(0, TOP_K);
 }
 
+const inputSchema = z.object({
+  path: z.string(),
+  query: z.string(),
+  topK: z.number().int().positive().optional(),
+});
+
 /**
  * The `semantic_search` tool.
  */
@@ -121,12 +128,8 @@ export const semanticSearchTool = tool({
   name: 'semantic_search',
   description:
     'Search a workspace semantically. Returns the top files ranked by token overlap with the query. Lightweight baseline; upgrade path to embeddings is documented.',
-  inputSchema: undefined as unknown as import('zod').ZodType<{
-    path: string;
-    query: string;
-    topK?: number;
-  }>,
-  callback: async (input): Promise<ToolResult> => {
+  inputSchema,
+  callback: async (input) => {
     try {
       const index = await indexWorkspace(input.path);
       const hits = rank(input.query, index).slice(0, input.topK ?? TOP_K);

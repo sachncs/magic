@@ -39,8 +39,10 @@ export async function gate(
   emitEvent: (event: unknown) => void,
 ): Promise<{approved: boolean; reason?: string}> {
   const id = newEventId();
-  return new Promise((resolve) => {
-    pending.set(id, {id, kind, payload, resolve, createdAt: Date.now()});
+  return new Promise<{approved: boolean; reason?: string}>((resolve) => {
+    pending.set(id, {id, kind, payload, resolve: (approved, reason) => {
+      resolve({approved, reason});
+    }, createdAt: Date.now()});
     emitEvent({
       version: 1,
       type: 'checkpoint',

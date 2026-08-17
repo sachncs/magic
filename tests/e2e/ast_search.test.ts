@@ -7,7 +7,6 @@ import {describe, it, expect} from 'vitest';
 import {findSymbolsInText} from '@magic/tools/ast_search';
 import {join} from 'node:path';
 import {readFile} from 'node:fs/promises';
-import {repo} from 'path';
 
 describe('e2e: AST + call graph', () => {
   it('finds the express route handler symbol', async () => {
@@ -25,5 +24,4 @@ describe('e2e: AST + call graph', () => {
     expect(text).toContain('app.post(');
     expect(text).toContain('app.listen(');
   });
-  void repo;
 });
