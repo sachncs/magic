@@ -1,5 +1,14 @@
-/**
- * @fileoverview Stub for @magic/web React entry. Real implementation lands in phase 5.
- */
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import {App} from './App';
+import './index.css';
 
-export {};
+const rootEl = document.getElementById('root');
+if (rootEl === null) {
+  throw new Error('missing #root element in index.html');
+}
+createRoot(rootEl).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
