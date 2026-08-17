@@ -8,8 +8,12 @@
     ".": "./src/index.ts",
     "./branded": "./src/branded.ts",
     "./types": "./src/types/index.ts",
-    "./events": "./src/events/index.ts",
-    "./pricing": "./src/types/pricing.ts"
+    "./types/repo": "./src/types/repo.ts",
+    "./types/session": "./src/types/session.ts",
+    "./types/tool_card": "./src/types/tool_card.ts",
+    "./types/version": "./src/types/version.ts",
+    "./types/pricing": "./src/types/pricing.ts",
+    "./events": "./src/events/index.ts"
   },
   "scripts": {
     "test": "vitest run",
