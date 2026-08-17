@@ -6,7 +6,10 @@
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./data_dir": "./src/data_dir.ts"
+    "./data_dir": "./src/data_dir.ts",
+    "./meta": "./src/meta.ts",
+    "./persistence/jsonl": "./src/persistence/jsonl.ts",
+    "./persistence/sqlite": "./src/persistence/sqlite.ts"
   },
   "scripts": {
     "test": "vitest run",

@@ -8,19 +8,16 @@
  * extract the underlying value.
  */
 
-declare const brand: unique symbol;
+declare const brandSymbol: unique symbol;
 
 /**
  * Phantom-typed opaque wrapper. The `__brand` field is unique per brand name;
  * the field never exists at runtime.
  */
-export type Branded<T, K extends string> = T & {readonly [brand]: K};
+export type Branded<T, K extends string> = T & {readonly [brandSymbol]: K};
 
 /**
  * Brands a value. No runtime check; the brand is enforced by the type system.
- *
- * @param value - The raw value to brand.
- * @returns The branded value.
  */
 export function brand<T, K extends string>(value: T): Branded<T, K> {
   return value as Branded<T, K>;
@@ -28,9 +25,6 @@ export function brand<T, K extends string>(value: T): Branded<T, K> {
 
 /**
  * Unbrands a value, returning the underlying raw type.
- *
- * @param value - The branded value.
- * @returns The raw value.
  */
 export function unbrand<T, K extends string>(value: Branded<T, K>): T {
   return value as T;
@@ -97,6 +91,11 @@ export type TaskId = Branded<string, 'TaskId'>;
 export type KbEntryId = Branded<string, 'KbEntryId'>;
 
 /**
+ * Branded string for a WebSocket token.
+ */
+export type WsToken = Branded<string, 'WsToken'>;
+
+/**
  * Generates a new branded SessionId using crypto.randomUUID.
  */
 export function newSessionId(): SessionId {
@@ -161,9 +160,6 @@ export function newKbEntryId(): KbEntryId {
 
 /**
  * Generates a new branded SpillLocator from a content hash.
- *
- * @param hash - The sha256 hex digest of the spilled content.
- * @returns The branded locator.
  */
 export function newSpillLocator(hash: string): SpillLocator {
   return brand<string, 'SpillLocator'>(hash);

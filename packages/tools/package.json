@@ -4,6 +4,22 @@
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./ast_search": "./src/ast_search.ts",
+    "./call_graph": "./src/call_graph.ts",
+    "./convention_infer": "./src/convention_infer.ts",
+    "./git_policy": "./src/git_policy.ts",
+    "./harness": "./src/repo/harness.ts",
+    "./monorepo_index": "./src/monorepo_index.ts",
+    "./network_guard": "./src/network_guard.ts",
+    "./playwright": "./src/playwright_tool.ts",
+    "./sandbox": "./src/sandbox.ts",
+    "./semantic_search": "./src/semantic_search.ts",
+    "./spill_store": "./src/spill_store.ts",
+    "./strands_docs": "./src/strands_docs.ts",
+    "./tool_cards": "./src/tool_cards.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

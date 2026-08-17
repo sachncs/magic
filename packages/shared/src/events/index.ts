@@ -203,6 +203,12 @@ export const wsEventSchema = z.discriminatedUnion('type', [
 ]);
 
 /**
+ * The current WS protocol version. Bumping is a breaking change;
+ * requires coordinated client + server release.
+ */
+export type WsProtocolVersion = 1;
+
+/**
  * TypeScript type for any WS event.
  */
 export type WsEvent = z.infer<typeof wsEventSchema>;

@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./auth": "./src/auth.ts",
-    "./ws-auth": "./src/ws_auth.ts"
+    "./ws-auth": "./src/ws_auth.ts",
+    "./ws_auth": "./src/ws_auth.ts"
   },
   "scripts": {
     "test": "vitest run",

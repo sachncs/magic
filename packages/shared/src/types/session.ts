@@ -48,14 +48,14 @@ export interface SessionCost {
 /**
  * Schema version string. Format: `vMAJOR.MINOR`. See `types/version.ts`.
  */
-export type SchemaVersion = string & {readonly __schema: true};
+export type SchemaVersion = string;
 
 /**
  * Graph definition version. Bumped when agent definitions or routing change.
  * Stamped on every session so old sessions can be replayed under the
  * correct definition (or warn on mismatch).
  */
-export type GraphVersion = string & {readonly __graph: true};
+export type GraphVersion = string;
 
 /**
  * The canonical session metadata record. Persisted as `meta.json`.
