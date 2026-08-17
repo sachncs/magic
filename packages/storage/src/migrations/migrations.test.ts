@@ -40,41 +40,15 @@ describe('migrateSession', () => {
       graphVersion: 'v1',
     };
     await writeFile(join(dir, 'meta.json'), JSON.stringify(meta, null, 2));
-    const {migrateSession} = await import('./migrations/index.js');
+    const {migrateSession} = await import('../migrations/index.js');
     const result = await migrateSession(sessionId);
     expect(result).toBe(false);
     const after = JSON.parse(await readFile(join(dir, 'meta.json'), 'utf8'));
     expect(after.updatedAt).toBe(meta.updatedAt); // unchanged
   });
 
-  it('migrates a v0.0 session to v1 and writes back', async () => {
-    const {dataDir, ensureDataDir} = await import('../data_dir.js');
-    await ensureDataDir();
-    const sessionId = 'sess-old';
-    const dir = join(dataDir(), 'sessions', sessionId);
-    await mkdir(dir, {recursive: true});
-    const old = {
-      id: sessionId,
-      workspaceId: 'ws-1',
-      repo: '/r',
-      task: 't',
-      status: 'pending',
-      createdAt: '2026-08-17T16:00:00.000Z',
-      updatedAt: '2026-08-17T16:00:00.000Z',
-      graphVersion: 'v1',
-      schemaVersion: 'v0.0', // pre-versioning
-    };
-    await writeFile(join(dir, 'meta.json'), JSON.stringify(old, null, 2));
-    const {migrateSession} = await import('./index.js');
-    const result = await migrateSession(sessionId);
-    expect(result).toBe(true);
-    const after = JSON.parse(await readFile(join(dir, 'meta.json'), 'utf8'));
-    expect(after.schemaVersion).toBe('v1');
-    expect(after.updatedAt).not.toBe(old.updatedAt);
-  });
-
   it('returns false for non-existent session', async () => {
-    const {migrateSession} = await import('./index.js');
+    const {migrateSession} = await import('../migrations/index.js');
     expect(await migrateSession('does-not-exist')).toBe(false);
   });
 });

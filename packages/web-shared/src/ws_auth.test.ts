@@ -67,7 +67,7 @@ describe('validateWsToken', () => {
   });
 
   it('throws WsAuthError on expired token', () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({now: new Date('2026-01-01T00:00:00Z')});
     try {
       const token = issueWsToken(sessionId);
       // Advance time past 24h TTL

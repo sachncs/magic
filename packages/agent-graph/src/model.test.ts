@@ -7,29 +7,41 @@ import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 import {buildModel, ModelNotConfiguredError, supportedProviders} from './model.js';
 
 describe('buildModel', () => {
-  const savedEnv = {...process.env};
+  const savedValues = new Map<string, string | undefined>();
 
   beforeEach(() => {
-    // Clear all provider-relevant env.
-    delete process.env.MAGIC_MODEL_PROVIDER;
-    delete process.env.MAGIC_MODEL_BASE_URL;
-    delete process.env.MAGIC_MODEL_NAME;
-    delete process.env.MAGIC_MODEL_API_KEY;
-    delete process.env.AWS_BEARER_TOKEN_BEDROCK;
-    delete process.env.AWS_ACCESS_KEY_ID;
-    delete process.env.AWS_PROFILE;
-    delete process.env.AWS_REGION;
-    delete process.env.MAGIC_BEDROCK_MODEL_ID;
-    delete process.env.ANTHROPIC_API_KEY;
-    delete process.env.OPENAI_API_KEY;
-    delete process.env.GOOGLE_API_KEY;
-    delete process.env.MINIMAX_API_KEY;
-    delete process.env.MINIMAX_BASE_URL;
-    delete process.env.MINIMAX_MODEL;
+    // Snapshot any current values so we can restore them in afterEach.
+    for (const key of [
+      'MAGIC_MODEL_PROVIDER',
+      'MAGIC_MODEL_BASE_URL',
+      'MAGIC_MODEL_NAME',
+      'MAGIC_MODEL_API_KEY',
+      'AWS_BEARER_TOKEN_BEDROCK',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_PROFILE',
+      'AWS_REGION',
+      'MAGIC_BEDROCK_MODEL_ID',
+      'ANTHROPIC_API_KEY',
+      'OPENAI_API_KEY',
+      'GOOGLE_API_KEY',
+      'MINIMAX_API_KEY',
+      'MINIMAX_BASE_URL',
+      'MINIMAX_MODEL',
+    ]) {
+      savedValues.set(key, process.env[key]);
+      delete process.env[key];
+    }
   });
 
   afterEach(() => {
-    process.env = savedEnv;
+    for (const [key, value] of savedValues) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    savedValues.clear();
   });
 
   it('throws when no provider is configured', () => {

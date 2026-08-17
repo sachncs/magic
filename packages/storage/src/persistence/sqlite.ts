@@ -108,9 +108,10 @@ export class SqliteBackend implements PersistenceBackend {
     score: number;
   }> {
     const stmt = this.db.prepare(
-      `SELECT session_id, id, snippet(records_fts, 0, '<mark>', '</mark>', '…', 16) AS snippet,
+      `SELECT r.session_id, r.id, snippet(records_fts, 0, '<mark>', '</mark>', '…', 16) AS snippet,
               bm25(records_fts) AS score
        FROM records_fts
+       JOIN records r ON r.rowid = records_fts.rowid
        WHERE records_fts MATCH ?
        ORDER BY score ASC
        LIMIT ?`,
