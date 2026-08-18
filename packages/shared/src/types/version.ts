@@ -100,6 +100,14 @@ export const graphMigrations: Readonly<Record<string, SchemaMigration>> = {
 };
 
 /**
+ * The v0.0 → v1 migration: identity (no shape changes; just stamps the
+ * latest version). Sessions created before explicit versioning migrate
+ * transparently.
+ */
+const v0_0_to_v1: SchemaMigration = (record) => record;
+void v0_0_to_v1;
+
+/**
  * Applies schema migrations in order, from the record's current version
  * up to `SCHEMA_VERSION_LATEST`. Returns the migrated record. Throws if
  * the record's version is below `SCHEMA_VERSION_MIN_SUPPORTED` or if a

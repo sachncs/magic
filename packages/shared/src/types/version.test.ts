@@ -47,8 +47,10 @@ describe('isSchemaVersionSupported', () => {
     expect(isSchemaVersionSupported('v0.0')).toBe(true);
   });
 
-  it('returns false for too-old versions', () => {
-    expect(isSchemaVersionSupported('v0.1')).toBe(false);
+  it('returns true for versions within the supported range', () => {
+    expect(isSchemaVersionSupported('v0.0')).toBe(true);
+    expect(isSchemaVersionSupported('v0.5')).toBe(true);
+    expect(isSchemaVersionSupported('v1')).toBe(true);
   });
 });
 
@@ -65,7 +67,7 @@ describe('migrateSchema', () => {
     expect(migrateSchema(rec, SCHEMA_VERSION_LATEST)).toBe(rec);
   });
 
-  it('throws for unsupported older versions', () => {
-    expect(() => migrateSchema({}, 'v0.1')).toThrow(/unsupported/);
+  it('throws when no migration is registered for the gap', () => {
+    expect(() => migrateSchema({}, 'v0.05')).toThrow(/no migration/);
   });
 });
