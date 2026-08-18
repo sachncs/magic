@@ -17,10 +17,10 @@
   },
   "dependencies": {
     "@magic/shared": "*",
-    "better-sqlite3": "^11.5.0",
-    "ignore": "^6.0.0",
+    "better-sqlite3": "^13.0.3",
+    "ignore": "^7.0.6",
     "simple-git": "^3.27.0",
-    "zod": "^3.23.0"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
