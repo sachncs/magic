@@ -1,0 +1,34 @@
+{
+  "name": "@magic/agent-graph",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cancellation": "./src/cancellation.ts",
+    "./checkpoints": "./src/checkpoints.ts",
+    "./cost_tracker": "./src/cost_tracker.ts",
+    "./graph_versioning": "./src/graph_versioning.ts",
+    "./memory/codebase_kb": "./src/memory/codebase_kb.ts",
+    "./model": "./src/model.ts",
+    "./sandbox_policy": "./src/sandbox_policy.ts",
+    "./commands": "./src/commands.ts",
+    "./permissions": "./src/permissions.ts",
+    "./prompts": "./src/prompts/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@magic/shared": "*",
+    "@magic/storage": "*",
+    "@magic/tools": "*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

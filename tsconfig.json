@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    {"path": "./packages/shared"},
+    {"path": "./packages/storage"},
+    {"path": "./packages/tools"},
+    {"path": "./packages/agent-graph"},
+    {"path": "./apps/web"}
+  ]
+}

@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: magic-app
+    restart: unless-stopped
+    ports:
+      - "4317:4317"
+    environment:
+      - NODE_ENV=production
+      - PORT=4317
+      - MAGIC_DATA_DIR=/data/.magic
+      - MAGIC_KEEP_REPO=true
+      - MAGIC_PERSISTENCE=jsonl
+      - MAGIC_PERMISSION_PRESET=workspace-write
+      - MAGIC_NETWORK_MODE=localhost-only
+      - MAGIC_API_TOKEN=${MAGIC_API_TOKEN:-}
+    volumes:
+      - magic-data:/data/.magic
+      - magic-repos:/data/.magic/repos
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: magic-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+volumes:
+  magic-data:
+  magic-repos:
+  ollama-data:

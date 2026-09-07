@@ -1,0 +1,30 @@
+{
+  "name": "@magic/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./branded": "./src/branded.ts",
+    "./types": "./src/types/index.ts",
+    "./types/repo": "./src/types/repo.ts",
+    "./types/session": "./src/types/session.ts",
+    "./types/tool_card": "./src/types/tool_card.ts",
+    "./types/version": "./src/types/version.ts",
+    "./types/pricing": "./src/types/pricing.ts",
+    "./events": "./src/events/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}

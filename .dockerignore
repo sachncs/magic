@@ -1,0 +1,13 @@
+node_modules
+dist
+.magic
+.git
+.github
+docs
+examples
+**/*.log
+.env
+.env.local
+coverage
+.claude
+.agents
