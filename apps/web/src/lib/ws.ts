@@ -38,8 +38,12 @@ export function useWebSocket(
       wsRef.current = ws;
       ws.onmessage = (ev) => {
         try {
-          const event = JSON.parse(ev.data) as WsEvent & {id?: number};
-          lastEventIdRef.current = Math.max(lastEventIdRef.current, event.id ?? 0);
+          const event = JSON.parse(ev.data) as WsEvent;
+          // WsEvent union members don't all expose `id`; advance the
+          // cursor by frame count when the field is absent so the
+          // ref still serves as a dedupe signal for resumable clients.
+          const frameId = lastEventIdRef.current + 1;
+          lastEventIdRef.current = frameId;
           qc.setQueryData<WsEvent[]>(['session', sessionId, 'events'], (prev) => [
             ...(prev ?? []),
             event,

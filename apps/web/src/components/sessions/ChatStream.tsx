@@ -7,6 +7,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {get} from '@/lib/api';
 import {useWebSocket} from '@/lib/ws';
+import {useSessionTokenStore} from '@/stores/session';
 import type {WsEvent} from '@magic/shared/events';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {ScrollArea} from '@/components/ui';
@@ -31,7 +32,10 @@ export function ChatStream({sessionId}: ChatStreamProps) {
     refetchOnMount: false,
   });
 
-  useWebSocket(sessionId, '__placeholder_token__');
+  const wsToken = useSessionTokenStore((s) =>
+    s.sessionId === sessionId ? s.wsToken : null,
+  );
+  useWebSocket(sessionId, wsToken ?? undefined);
 
   const events = initial.data ?? [];
 

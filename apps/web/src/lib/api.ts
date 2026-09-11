@@ -2,6 +2,8 @@
  * @fileoverview Typed fetch wrapper for the Fastify REST API.
  */
 
+import {useSessionTokenStore} from '@/stores/session';
+
 const BASE = '';
 
 /**
@@ -23,11 +25,12 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
 }
 
 /**
- * Reads the bearer token from a module-level variable set by the auth
- * store. Falls back to undefined.
+ * Reads the bearer token from the session-token store. The store is
+ * populated from the \`POST /api/sessions\` response (or the
+ * user-supplied Settings → General API token).
  */
 function bearer(): string | undefined {
-  return (window as unknown as {__MAGIC_TOKEN__?: string}).__MAGIC_TOKEN__;
+  return useSessionTokenStore.getState().apiToken ?? undefined;
 }
 
 /**
