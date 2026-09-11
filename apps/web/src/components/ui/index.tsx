@@ -11,7 +11,7 @@
  *                        dialog sheet dropdown-menu
  */
 
-import {forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type TextareaHTMLAttributes, type HTMLAttributes} from 'react';
+import {forwardRef, createContext, useContext, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type TextareaHTMLAttributes, type HTMLAttributes} from 'react';
 import {cn} from '@/lib/utils';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & {variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost'; size?: 'default' | 'sm' | 'lg' | 'icon'}>(
@@ -115,22 +115,24 @@ Label.displayName = 'Label';
 export const Switch = forwardRef<HTMLButtonElement, {checked?: boolean; defaultChecked?: boolean; onCheckedChange?: (v: boolean) => void; className?: string; id?: string}>(
   ({className, checked, defaultChecked, onCheckedChange, ...props}, ref) => {
     const isControlled = checked !== undefined;
+    const [uncontrolled, setUncontrolled] = useState<boolean>(defaultChecked ?? false);
+    const value = isControlled ? checked : uncontrolled;
     return (
       <button
         ref={ref}
         type="button"
         role="switch"
-        aria-checked={isControlled ? checked : defaultChecked ?? false}
+        aria-checked={value}
         onClick={() => {
+          const next = !value;
           if (!isControlled) {
-            onCheckedChange?.(!defaultChecked);
-          } else {
-            onCheckedChange?.(!checked);
+            setUncontrolled(next);
           }
+          onCheckedChange?.(next);
         }}
         className={cn(
           'inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors',
-          (isControlled ? checked : defaultChecked) ? 'bg-primary' : 'bg-muted',
+          value ? 'bg-primary' : 'bg-muted',
           className,
         )}
         {...props}
@@ -145,30 +147,88 @@ export const ScrollArea = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
 );
 ScrollArea.displayName = 'ScrollArea';
 
-// Tabs (very minimal; shadcn uses Radix which is heavier)
-export const Tabs = ({children, value, onValueChange, className}: {children: React.ReactNode; value: string; onValueChange: (v: string) => void; className?: string}) => (
-  <div className={className} data-value={value} onChange={(e) => onValueChange((e.target as HTMLInputElement).value)}>
-    {children}
-  </div>
-);
+/**
+ * Tabs context. Children call {@link useTabsContext} to wire their
+ * trigger clicks into the active-value state.
+ */
+interface TabsContextValue {
+  value: string;
+  setValue: (v: string) => void;
+}
+
+const TabsContext = createContext<TabsContextValue>({
+  value: '',
+  setValue: () => undefined,
+});
+
+function useTabsContext(): TabsContextValue {
+  return useContext(TabsContext);
+}
+
+// Tabs (very minimal; shadcn uses Radix which is heavier). Manages
+// its own active value when uncontrolled and dispatches
+// `onValueChange` on trigger click so callers can stay in sync.
+export const Tabs = ({
+  children,
+  value,
+  defaultValue,
+  onValueChange,
+  className,
+}: {
+  children: React.ReactNode;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (v: string) => void;
+  className?: string;
+}) => {
+  const isControlled = value !== undefined;
+  const [internal, setInternal] = useState<string>(defaultValue ?? '');
+  const active = isControlled ? value : internal;
+  const setValue = (v: string): void => {
+    if (!isControlled) {
+      setInternal(v);
+    }
+    onValueChange?.(v);
+  };
+  return (
+    <TabsContext.Provider value={{value: active, setValue}}>
+      <div className={className} data-value={active}>
+        {children}
+      </div>
+    </TabsContext.Provider>
+  );
+};
 export const TabsList = ({children, className}: {children: React.ReactNode; className?: string}) => (
   <div className={cn('inline-flex rounded bg-muted p-1', className)} role="tablist">{children}</div>
 );
-export const TabsTrigger = ({children, value, className}: {children: React.ReactNode; value: string; className?: string}) => (
-  <button
-    type="button"
-    role="tab"
-    data-value={value}
-    className={cn('rounded px-3 py-1 text-sm data-[active=true]:bg-background', className)}
-  >
-    {children}
-  </button>
-);
-export const TabsContent = ({children, value, className}: {children: React.ReactNode; value: string; className?: string}) => (
-  <div role="tabpanel" data-value={value} className={cn('pt-3', className)}>
-    {children}
-  </div>
-);
+export const TabsTrigger = ({children, value, className}: {children: React.ReactNode; value: string; className?: string}) => {
+  const ctx = useTabsContext();
+  const active = ctx.value === value;
+  return (
+    <button
+      type="button"
+      role="tab"
+      data-value={value}
+      data-active={active}
+      aria-selected={active}
+      onClick={() => ctx.setValue(value)}
+      className={cn('rounded px-3 py-1 text-sm data-[active=true]:bg-background', className)}
+    >
+      {children}
+    </button>
+  );
+};
+export const TabsContent = ({children, value, className}: {children: React.ReactNode; value: string; className?: string}) => {
+  const ctx = useTabsContext();
+  if (ctx.value !== value) {
+    return null;
+  }
+  return (
+    <div role="tabpanel" data-value={value} className={cn('pt-3', className)}>
+      {children}
+    </div>
+  );
+};
 
 // Select (very minimal; shadcn uses Radix Select)
 export const Select = ({children, value, onValueChange, defaultValue}: {children: React.ReactNode; value?: string; onValueChange?: (v: string) => void; defaultValue?: string}) => (
