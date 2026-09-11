@@ -4,6 +4,12 @@
  * an `AgentResult`; in v1 we use a deterministic stub that calls
  * the tool surface directly. The Strands SDK can later replace the
  * runner with a model-driven agent.
+ *
+ * Status: STUB. The \`router\` and \`planner\` runners are heuristic
+ * keyword matches against the user message; a real LLM-driven
+ * implementation will replace them once the Strands layer is wired
+ * (see issue #34). The other agents do call the tool surface, but
+ * also short-circuit any LLM-driven reasoning.
  */
 
 import {defineAgent, type MagicAgent, type AgentResult, type AgentInput} from '../agent.js';

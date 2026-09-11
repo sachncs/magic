@@ -5,6 +5,25 @@ true agentic software engineering on it: understand semantically,
 plan, edit, verify at the build/typecheck/test level, open PRs, and
 learn across sessions.
 
+> Status: agent runners are stub heuristics. The graph topology,
+> tool surface, and verifier pipeline are wired today; the LLM
+> dispatcher behind them lands when the Strands SDK is integrated.
+
+## Why magic
+
+- **The problem.** Today's AI coding tools — autocomplete, single-shot
+  chat, "agent in a tab" — plan, edit, and ship without verification
+  gates. Reviews catch what they ship; tests catch what reviews miss.
+- **The approach.** magic is an explicit agent graph (`indexer` →
+  `harness_detector` + `planner` + `security_auditor` in parallel →
+  `router` → swarm → `verifier` → `reporter`) where every edit must
+  pass `typecheck + lint + test + build` before it can become a PR.
+- **What you get.** Draft PRs that survive CI on the first push,
+  with a branch name, Conventional Commits message, and a structured
+  description.
+
+## Capabilities
+
 - **Understand** semantically (AST + call graph + conventions + prior knowledge)
 - **Plan** with explicit checkpoint gates
 - **Edit** with semantic awareness
@@ -21,7 +40,7 @@ learn across sessions.
 
 ```bash
 # 1. Install
-git clone <your-fork-url>
+git clone https://github.com/sachncs/magic.git
 cd magic
 nvm use                # picks up Node 20 from .nvmrc
 npm install
