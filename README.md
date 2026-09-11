@@ -14,6 +14,11 @@ true agentic software engineering on it: understand semantically,
 plan, edit, verify at the build/typecheck/test level, open PRs, and
 learn across sessions.
 
+> **Project status.** `magic` is a personal tool maintained on a
+> best-effort basis. The npm package `@magic/*` workspace set is not
+> published; the \"magic\" name and `@magic` scope are internal
+> conventions. v1 makes no commitment to package publication.
+>
 > Status: agent runners are stub heuristics. The graph topology,
 > tool surface, and verifier pipeline are wired today; the LLM
 > dispatcher behind them lands when the Strands SDK is integrated.
