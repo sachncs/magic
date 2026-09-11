@@ -7,6 +7,9 @@ contributors don't waste time wondering whether to add them.
 
 - No user accounts, no login, no RBAC
 - The app assumes a single trusted operator on localhost
+- The Fastify server binds 127.0.0.1 by default; set
+  `MAGIC_BIND_ALL_INTERFACES=true` to bind 0.0.0.0 (you must also
+  configure `MAGIC_API_TOKEN` before doing so)
 - Bearer-token auth (item 0.11) is the only access control
 - **Revisit when**: we add team features or expose the app beyond localhost
 
