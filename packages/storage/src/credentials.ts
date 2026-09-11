@@ -10,6 +10,7 @@
 
 import {
   readFile,
+  rename,
   writeFile,
   mkdir,
   chmod,
@@ -58,6 +59,20 @@ export interface CredentialDescriptor {
 }
 
 /**
+ * Thrown when the on-disk encryption key cannot decrypt any stored
+ * credential — i.e. the key file is corrupt or was rotated without
+ * re-encrypting. The store refuses to overwrite a corrupt key
+ * silently; the operator must move the corrupt file aside before
+ * restart (see SECURITY.md).
+ */
+export class KeyCorruptError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'KeyCorruptError';
+  }
+}
+
+/**
  * Returns the path to the credentials file.
  */
 function credentialsFile(): string {
@@ -72,18 +87,76 @@ function keyFile(): string {
 }
 
 /**
+ * Returns the backup key path (next to the live key file).
+ */
+function keyFileBackup(): string {
+  return `${dataDir()}/.key.bak`;
+}
+
+/**
+ * Probes whether the supplied key can decrypt at least one stored
+ * credential. Used to detect a corrupt key file before silently
+ * regenerating one (which would orphan every prior credential).
+ */
+async function probeKey(key: Buffer): Promise<boolean> {
+  try {
+    const file = await loadFile();
+    const entries = Object.values(file.credentials);
+    if (entries.length === 0) {
+      return true;
+    }
+    decrypt(entries[0]!, key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Loads (or creates) the encryption key. Key is 32 random bytes.
+ *
+ * If a key file already exists with the right length, its contents
+ * are validated against the credentials file via {@link probeKey}; on
+ * mismatch the process aborts with {@link KeyCorruptError} instead of
+ * silently regenerating. The previous key file is renamed to
+ * \`${keyFile()}.bak\` before a new key is written, so an operator
+ * who restarts after a partial corruption still has a fallback.
  */
 async function loadKey(): Promise<Buffer> {
   await ensureDataDir();
   const path = keyFile();
+  const backupPath = keyFileBackup();
+  let existing: Buffer | undefined;
   try {
-    const existing = await readFile(path);
-    if (existing.length === KEY_LENGTH) {
-      return existing;
-    }
+    existing = await readFile(path);
   } catch {
     // missing; will create below
+  }
+  if (existing !== undefined && existing.length === KEY_LENGTH) {
+    if (await probeKey(existing)) {
+      return existing;
+    }
+    // Back up the corrupt-but-right-length key so the operator has a
+    // recovery path before we refuse to overwrite.
+    try {
+      await rename(path, backupPath);
+    } catch {
+      // Best-effort: if rename fails we still abort with the error.
+    }
+    throw new KeyCorruptError(
+      `encryption key at ${path} cannot decrypt existing credentials; ` +
+        `refusing to overwrite. The suspect key has been moved to ` +
+        `${backupPath}; investigate before restarting.`,
+    );
+  }
+  if (existing !== undefined) {
+    // Wrong length — back up the bad key before overwriting.
+    try {
+      await rename(path, backupPath);
+    } catch {
+      // Best-effort backup; if rename fails we still continue to
+      // generate a new key so the operator is not locked out.
+    }
   }
   const fresh = randomBytes(KEY_LENGTH);
   await writeFile(path, fresh, {mode: 0o600});
