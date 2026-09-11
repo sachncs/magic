@@ -88,13 +88,24 @@ export async function buildServer(): Promise<FastifyInstance> {
 }
 
 /**
+ * Resolves the bind address for the Fastify listener. Defaults to
+ * loopback so an unauthenticated dev server is not exposed to the
+ * network. Opt-in to all-interfaces binding by setting
+ * \`MAGIC_BIND_ALL_INTERFACES=true\` — usually only safe when
+ * \`MAGIC_API_TOKEN\` is also set.
+ */
+export function bindHost(): string {
+  return process.env['MAGIC_BIND_ALL_INTERFACES'] === 'true' ? '0.0.0.0' : '127.0.0.1';
+}
+
+/**
  * When run directly (e.g. `tsx src/server/server.ts`), start the
  * server on `PORT` (default 4317).
  */
 async function main(): Promise<void> {
   const port = Number.parseInt(process.env['PORT'] ?? '4317', 10);
   const app = await buildServer();
-  await app.listen({port, host: '0.0.0.0'});
+  await app.listen({port, host: bindHost()});
 }
 
 const isDirectRun = process.argv[1] === fileURLToPath(import.meta.url);
