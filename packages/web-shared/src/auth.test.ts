@@ -11,6 +11,7 @@ import {
   extractBearerToken,
   isValidApiToken,
   isPublicPath,
+  pathFromUrl,
 } from './auth.js';
 
 describe('getApiToken / authRequired', () => {
@@ -134,8 +135,33 @@ describe('isPublicPath', () => {
     expect(isPublicPath('/api/health/ready')).toBe(true);
   });
 
+  it('returns true for health paths with query strings', () => {
+    expect(isPublicPath('/api/health/live?probe=1')).toBe(true);
+    expect(isPublicPath('/api/health/ready?source=monitor')).toBe(true);
+    expect(isPublicPath('/api/health/live#hash')).toBe(true);
+  });
+
   it('returns false for non-health paths', () => {
     expect(isPublicPath('/api/sessions')).toBe(false);
     expect(isPublicPath('/api/sessions/abc')).toBe(false);
+    expect(isPublicPath('/api/sessions?q=foo')).toBe(false);
+  });
+});
+
+describe('pathFromUrl', () => {
+  it('returns the path unchanged when there is no query or fragment', () => {
+    expect(pathFromUrl('/api/health/live')).toBe('/api/health/live');
+  });
+
+  it('strips the query string', () => {
+    expect(pathFromUrl('/api/health/live?probe=1')).toBe('/api/health/live');
+  });
+
+  it('strips the fragment', () => {
+    expect(pathFromUrl('/api/health/live#section')).toBe('/api/health/live');
+  });
+
+  it('strips both, keeping the query before the fragment', () => {
+    expect(pathFromUrl('/api/health/live?probe=1#sec')).toBe('/api/health/live');
   });
 });

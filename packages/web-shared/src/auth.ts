@@ -94,11 +94,27 @@ export const PUBLIC_PATHS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Whether a given path is exempt from auth.
+ * Strips the query string and fragment from a request URL so the
+ * remainder can be matched against {@link PUBLIC_PATHS}. URLs that
+ * include `?probe=1` or `#hash` map to the same path as the bare URL.
+ */
+export function pathFromUrl(url: string): string {
+  const queryIdx = url.indexOf('?');
+  const fragmentIdx = url.indexOf('#');
+  const end = [queryIdx, fragmentIdx].reduce(
+    (acc, i) => (i === -1 ? acc : Math.min(acc, i)),
+    url.length,
+  );
+  return url.slice(0, end) || url;
+}
+
+/**
+ * Whether a given URL is exempt from auth. Query string and fragment
+ * are ignored so health probes with `?probe=1` continue to pass.
  *
- * @param path - The request URL path (no query string).
+ * @param url - The full request URL (possibly with query string).
  * @returns True if auth should be skipped for this path.
  */
-export function isPublicPath(path: string): boolean {
-  return PUBLIC_PATHS.has(path);
+export function isPublicPath(url: string): boolean {
+  return PUBLIC_PATHS.has(pathFromUrl(url));
 }
