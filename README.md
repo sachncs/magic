@@ -1,5 +1,14 @@
 # magic
 
+> True agentic software engineering on any repository.
+
+[![CI](https://github.com/sachncs/magic/actions/workflows/test.yml/badge.svg)](https://github.com/sachncs/magic/actions/workflows/test.yml)
+[![Lint](https://github.com/sachncs/magic/actions/workflows/lint.yml/badge.svg)](https://github.com/sachncs/magic/actions/workflows/lint.yml)
+[![Typecheck](https://github.com/sachncs/magic/actions/workflows/typecheck.yml/badge.svg)](https://github.com/sachncs/magic/actions/workflows/typecheck.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Node 20+](https://img.shields.io/badge/node-%3E%3D20-339933)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6)](https://www.typescriptlang.org/)
+
 A Strands Agents-powered web app that consumes any repo and performs
 true agentic software engineering on it: understand semantically,
 plan, edit, verify at the build/typecheck/test level, open PRs, and
@@ -8,6 +17,21 @@ learn across sessions.
 > Status: agent runners are stub heuristics. The graph topology,
 > tool surface, and verifier pipeline are wired today; the LLM
 > dispatcher behind them lands when the Strands SDK is integrated.
+
+## Install
+
+```bash
+git clone https://github.com/sachncs/magic.git
+cd magic
+npm install
+npm run dev
+# → UI at http://localhost:5173
+# → Fastify at http://localhost:4317
+```
+
+[Quickstart](#quickstart) ·
+[Architecture](#architecture-one-line) ·
+[Docs](./docs/architecture.md)
 
 ## Why magic
 
