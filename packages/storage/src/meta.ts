@@ -14,11 +14,12 @@ import type {SchemaVersion} from '@magic/shared/types/version';
 import {ensureDataDir, sessionMetaFile, sessionDir} from './data_dir.js';
 
 /**
- * Reads the meta.json for a session. Returns null if it doesn't exist.
- * On read, runs the payload through schema migration so the returned
- * record is always at the latest version.
+ * Reads and JSON-parses the raw `meta.json` for a session, or returns
+ * null if the file does not exist. Shared by {@link readMeta} and
+ * {@link migrateSession} so they cannot drift in how they parse or
+ * version-derive the on-disk record.
  */
-export async function readMeta(id: string): Promise<SessionMeta | null> {
+export async function loadRawMeta(id: string): Promise<Record<string, unknown> | null> {
   const path = sessionMetaFile(id);
   try {
     await access(path);
@@ -26,23 +27,42 @@ export async function readMeta(id: string): Promise<SessionMeta | null> {
     return null;
   }
   const raw = await readFile(path, 'utf8');
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(raw);
+    return JSON.parse(raw) as Record<string, unknown>;
   } catch {
     throw new Error(`meta.json for session ${id} is not valid JSON`);
   }
+}
 
-  // Determine version; default to v0.0 if missing (pre-versioning).
-  const record = parsed as Record<string, unknown>;
+/**
+ * Stamps the latest schema version (and `updatedAt` if requested) on
+ * the in-memory record. The single source of truth for which fields
+ * are stamped when a meta record is rewritten.
+ */
+export function stampLatest(record: Record<string, unknown>, opts: {bumpUpdatedAt?: boolean} = {}): Record<string, unknown> {
+  record['schemaVersion'] = SCHEMA_VERSION_LATEST;
+  if (opts.bumpUpdatedAt === true) {
+    record['updatedAt'] = new Date().toISOString();
+  }
+  return record;
+}
+
+/**
+ * Reads the meta.json for a session. Returns null if it doesn't exist.
+ * On read, runs the payload through schema migration so the returned
+ * record is always at the latest version.
+ */
+export async function readMeta(id: string): Promise<SessionMeta | null> {
+  const record = await loadRawMeta(id);
+  if (record === null) {
+    return null;
+  }
   const currentVersion =
     typeof record['schemaVersion'] === 'string'
       ? (record['schemaVersion'] as string)
       : 'v0.0';
-
   const migrated = migrateSchema<Record<string, unknown>>(record, currentVersion);
-  // Stamp the latest version on the way out.
-  migrated['schemaVersion'] = SCHEMA_VERSION_LATEST;
+  stampLatest(migrated);
   return sessionMetaSchema.parse(migrated);
 }
 
