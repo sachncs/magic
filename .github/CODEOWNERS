@@ -1,0 +1,25 @@
+# CODEOWNERS — review assignments for sachncs/magic.
+# Each line is a path pattern followed by one or more GitHub
+# usernames or teams. The last matching pattern wins; the default
+# owner below covers everything else.
+
+# Default owner for the entire repo.
+/                  @sachncs
+
+# Frontend (SPA + Fastify server).
+/apps/             @sachncs
+
+# Cross-cutting packages (shared types, storage, agent graph,
+# tools, web-shared).
+/packages/         @sachncs
+
+# CI / Dependabot / repo metadata.
+/.github/          @sachncs
+/.github/workflows/ @sachncs
+
+# Docs site.
+/docs/             @sachncs
+
+# Tests live alongside the code they cover; reviewers of the
+# owning package own the tests.
+/tests/            @sachncs
