@@ -46,4 +46,26 @@ describe('e2e: concurrent writes', () => {
     expect(log).toContain('t1');
     void writeFile;
   });
+
+  it('records winner=first for an uncontended call', async () => {
+    await withFileLock('/solo.txt', async () => undefined, {toolCallId: 'solo', mode: 'edit'});
+    const log = await readFile(join(work, 'audit.log'), 'utf8');
+    const entries = log.trim().split('\n').map((l) => JSON.parse(l));
+    const solo = entries.filter((e) => e.toolCallId === 'solo');
+    expect(solo.length).toBe(1);
+    expect(solo[0].winner).toBe('first');
+  });
+
+  it('records one first + one second for two concurrent calls', async () => {
+    const slow = withFileLock('/race.txt', async () => {
+      await new Promise((r) => setTimeout(r, 20));
+    }, {toolCallId: 'r1', mode: 'edit'});
+    const fast = withFileLock('/race.txt', async () => undefined, {toolCallId: 'r2', mode: 'edit'});
+    await Promise.all([slow, fast]);
+    const log = await readFile(join(work, 'audit.log'), 'utf8');
+    const entries = log.trim().split('\n').map((l) => JSON.parse(l));
+    const race = entries.filter((e) => e.toolCallId === 'r1' || e.toolCallId === 'r2');
+    expect(race.length).toBe(2);
+    expect(race.map((e) => e.winner).sort()).toEqual(['first', 'second']);
+  });
 });
