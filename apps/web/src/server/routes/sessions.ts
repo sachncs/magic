@@ -5,8 +5,11 @@
 
 import type {FastifyPluginAsync} from 'fastify';
 import {randomUUID} from 'node:crypto';
+import {readdir, rm} from 'node:fs/promises';
+import {join} from 'node:path';
 import {
   issueWsToken,
+  revokeWsToken,
   type WsToken,
 } from '@magic/web-shared/ws_auth';
 import {
@@ -17,8 +20,16 @@ import {
   generateAndPersistTitle,
   type TitleModel,
 } from '@magic/storage';
+import {sessionsDir} from '@magic/storage/data_dir';
 import {buildModel} from '@magic/agent-graph/model';
 import {brand, newSessionId, newWorkspaceId, type SessionId, type WorkspaceId} from '@magic/shared/branded';
+
+/**
+ * In-memory record of the WS token issued per session so DELETE can
+ * revoke it. The web-shared module's token registry is private; we
+ * track issued tokens here as a best-effort revocation hook.
+ */
+const issuedTokens = new Map<string, WsToken>();
 
 const sessionsRoutes: FastifyPluginAsync = async (app) => {
   const storage = createStorage();
@@ -43,6 +54,7 @@ const sessionsRoutes: FastifyPluginAsync = async (app) => {
       graphVersion: 'v1',
     });
     const wsToken = issueWsToken(sessionId);
+    issuedTokens.set(sessionId, wsToken);
     // When server-side auth is required, return the configured
     // MAGIC_API_TOKEN to the client so subsequent fetches carry the
     // Authorization header. When auth is disabled the field is
@@ -53,9 +65,33 @@ const sessionsRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get('/sessions', async () => {
-    // For v1: return an empty list. A real implementation reads the
-    // sessions/ directory and returns meta summaries.
-    return [];
+    let entries: string[] = [];
+    try {
+      entries = await readdir(sessionsDir());
+    } catch {
+      return [];
+    }
+    const summaries: Array<{
+      id: string;
+      repo: string;
+      task: string;
+      status: string;
+      createdAt: string;
+    }> = [];
+    for (const id of entries) {
+      const meta = await readMeta(id);
+      if (meta === null) {
+        continue;
+      }
+      summaries.push({
+        id: meta.id,
+        repo: meta.repo,
+        task: meta.task,
+        status: meta.status,
+        createdAt: meta.createdAt,
+      });
+    }
+    return summaries;
   });
 
   app.get<{Params: {id: string}}>('/sessions/:id', async (req, reply) => {
@@ -73,7 +109,13 @@ const sessionsRoutes: FastifyPluginAsync = async (app) => {
     if (meta === null) {
       return reply.code(404).send({error: 'not found'});
     }
-    // Real implementation: delete session dir + revoke WS token.
+    // Remove the session directory and revoke the issued WS token.
+    await rm(join(sessionsDir(), id), {recursive: true, force: true});
+    const token = issuedTokens.get(id);
+    if (token !== undefined) {
+      revokeWsToken(token);
+      issuedTokens.delete(id);
+    }
     void storage;
     return reply.code(204).send();
   });
