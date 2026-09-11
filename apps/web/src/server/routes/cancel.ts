@@ -15,7 +15,7 @@ const cancelRoutes: FastifyPluginAsync = async (app) => {
     if (meta === null) {
       return reply.code(404).send({error: 'not found'});
     }
-    const cancelled = await cancelAll();
+    const cancelled = await cancelAll(id);
     await writeMeta(id, {...meta, status: 'cancelled', updatedAt: new Date().toISOString()});
     return {cancelled};
   });

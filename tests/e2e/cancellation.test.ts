@@ -37,10 +37,27 @@ describe('e2e: cancellation', () => {
     const b = join(work, 'b.txt');
     await writeFile(a, 'A');
     await writeFile(b, 'B');
-    await beginEdit(a);
-    await beginEdit(b);
-    const n = await cancelAll();
+    await beginEdit(a, 'sess-A' as ReturnType<typeof newSessionId>);
+    await beginEdit(b, 'sess-A' as ReturnType<typeof newSessionId>);
+    const n = await cancelAll('sess-A' as ReturnType<typeof newSessionId>);
     expect(n).toBe(2);
+  });
+
+  it('cancelAll is scoped to the session', async () => {
+    const {newSessionId} = await import('@magic/shared/branded');
+    const sA = newSessionId();
+    const sB = newSessionId();
+    const a = join(work, 'a.txt');
+    const b = join(work, 'b.txt');
+    await writeFile(a, 'A');
+    await writeFile(b, 'B');
+    await beginEdit(a, sA);
+    await beginEdit(b, sB);
+    const nA = await cancelAll(sA);
+    expect(nA).toBe(1);
+    // sB's edit is still inflight and cancels cleanly.
+    const nB = await cancelAll(sB);
+    expect(nB).toBe(1);
   });
 
   it('concurrent beginEdit on the same path produces distinct snapshots', async () => {
