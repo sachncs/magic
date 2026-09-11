@@ -59,14 +59,15 @@ export class SqliteBackend implements PersistenceBackend {
     );
     const fts = this.db.prepare(
       `INSERT OR REPLACE INTO records_fts (rowid, content, session_id)
-       VALUES (
-         (SELECT rowid FROM records WHERE id = ? AND session_id = ?),
-         ?, ?
-       )`,
+       VALUES (?, ?, ?)`,
     );
     const tx = this.db.transaction(() => {
-      stmt.run(record.id, sessionId, record.kind, record.ts, JSON.stringify(record.payload));
-      fts.run(record.id, sessionId, JSON.stringify(record.payload), sessionId);
+      const info = stmt.run(record.id, sessionId, record.kind, record.ts, JSON.stringify(record.payload));
+      // Use lastInsertRowid rather than a SELECT against the same
+      // transaction: SELECT inside the transaction doesn't always see
+      // the row just inserted, which produced NULL rowids in FTS.
+      const rowid = info.lastInsertRowid;
+      fts.run(rowid, JSON.stringify(record.payload), sessionId);
     });
     tx();
     return Promise.resolve();
