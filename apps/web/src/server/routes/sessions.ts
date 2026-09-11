@@ -43,7 +43,13 @@ const sessionsRoutes: FastifyPluginAsync = async (app) => {
       graphVersion: 'v1',
     });
     const wsToken = issueWsToken(sessionId);
-    return reply.code(201).send({sessionId, workspaceId, wsToken});
+    // When server-side auth is required, return the configured
+    // MAGIC_API_TOKEN to the client so subsequent fetches carry the
+    // Authorization header. When auth is disabled the field is
+    // undefined and the client simply omits the header.
+    const {getApiToken} = await import('@magic/web-shared/auth');
+    const apiToken = getApiToken();
+    return reply.code(201).send({sessionId, workspaceId, wsToken, apiToken});
   });
 
   app.get('/sessions', async () => {

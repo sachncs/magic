@@ -4,9 +4,10 @@
  */
 
 import {useQueryClient} from '@tanstack/react-query';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {Badge} from '@/components/ui';
 import {useWebSocket} from '@/lib/ws';
+import {useSessionTokenStore} from '@/stores/session';
 
 interface CostBadgeProps {
   sessionId: string;
@@ -23,7 +24,10 @@ interface CostState {
 export function CostBadge({sessionId}: CostBadgeProps) {
   const [state, setState] = useState<CostState>({cost: 0, cap: 0});
   const qc = useQueryClient();
-  useWebSocket(sessionId, '__placeholder_token__', {
+  const wsToken = useSessionTokenStore((s) =>
+    s.sessionId === sessionId ? s.wsToken : null,
+  );
+  useWebSocket(sessionId, wsToken ?? undefined, {
     onEvent: (event) => {
       if (event.type === 'costUpdate') {
         setState({cost: event.sessionCostUsd, cap: event.capUsd});
@@ -32,9 +36,6 @@ export function CostBadge({sessionId}: CostBadgeProps) {
       }
     },
   });
-  useEffect(() => {
-    // no-op; placeholder
-  }, []);
   return (
     <Badge variant="outline" className="font-mono text-xs">
       ${state.cost.toFixed(4)}
