@@ -9,6 +9,7 @@ services:
       - NODE_ENV=production
       - PORT=4317
       - MAGIC_DATA_DIR=/data/.magic
+      - MAGIC_REPO_PATH=/data/.magic_repos
       - MAGIC_KEEP_REPO=true
       - MAGIC_PERSISTENCE=jsonl
       - MAGIC_PERMISSION_PRESET=workspace-write
@@ -16,7 +17,7 @@ services:
       - MAGIC_API_TOKEN=${MAGIC_API_TOKEN:-}
     volumes:
       - magic-data:/data/.magic
-      - magic-repos:/data/.magic/repos
+      - magic-repos:/data/.magic_repos
 
   ollama:
     image: ollama/ollama:latest
@@ -27,6 +28,10 @@ services:
     volumes:
       - ollama-data:/root/.ollama
 
+# magic-data holds sessions, KB, spill, etc.
+# magic-repos is a separate named volume so it cannot be shadowed by
+# the outer magic-data mount; both clean up cleanly with
+# \`docker compose down -v\`.
 volumes:
   magic-data:
   magic-repos:

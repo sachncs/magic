@@ -40,8 +40,15 @@ export function sessionsDir(): string {
 
 /**
  * Returns the absolute path of the cached repos subdirectory.
+ * Honours \`MAGIC_REPO_PATH\` when set so deployments can keep the
+ * repo cache on a separate volume; otherwise defaults to
+ * \`\${dataDir}/repos\`.
  */
 export function reposDir(): string {
+  const override = env.MAGIC_REPO_PATH;
+  if (override !== undefined && override.length > 0) {
+    return isAbsolute(override) ? override : resolve(process.cwd(), override);
+  }
   return `${dataDir()}/repos`;
 }
 
