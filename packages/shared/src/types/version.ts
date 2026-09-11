@@ -55,12 +55,44 @@ export const graphVersionSchema = z
   .regex(/^v\d+\.\d+$/, 'must be in form vMAJOR.MINOR');
 
 /**
+ * Parses a `vMAJOR` or `vMAJOR.MINOR` string into a `(major, minor)`
+ * tuple. `v1` is equivalent to `v1.0`. Throws if the string does not
+ * match the schema-version format.
+ */
+export function parseSchemaVersion(v: string): {major: number; minor: number} {
+  const match = /^v(\d+)(?:\.(\d+))?$/.exec(v);
+  if (!match) {
+    throw new Error(`not a schema version: ${v}`);
+  }
+  return {major: Number(match[1]), minor: match[2] ? Number(match[2]) : 0};
+}
+
+/**
+ * Compares two schema-version strings numerically. Returns
+ * `-1 | 0 | 1` like `Array.prototype.sort`. Throws on malformed input.
+ */
+export function compareSchemaVersions(a: string, b: string): -1 | 0 | 1 {
+  const va = parseSchemaVersion(a);
+  const vb = parseSchemaVersion(b);
+  if (va.major !== vb.major) {
+    return va.major < vb.major ? -1 : 1;
+  }
+  if (va.minor !== vb.minor) {
+    return va.minor < vb.minor ? -1 : 1;
+  }
+  return 0;
+}
+
+/**
  * Returns true if the given schema version can be safely loaded by the
  * current code. A version is supported if it is between MIN_SUPPORTED and
  * LATEST inclusive.
  */
 export function isSchemaVersionSupported(v: string): boolean {
-  return v >= SCHEMA_VERSION_MIN_SUPPORTED && v <= SCHEMA_VERSION_LATEST;
+  return (
+    compareSchemaVersions(v, SCHEMA_VERSION_MIN_SUPPORTED) >= 0 &&
+    compareSchemaVersions(v, SCHEMA_VERSION_LATEST) <= 0
+  );
 }
 
 /**
@@ -128,7 +160,7 @@ export function migrateSchema<T = unknown>(
   let result = record;
   let version = currentVersion;
 
-  while (version !== SCHEMA_VERSION_LATEST) {
+  while (compareSchemaVersions(version, SCHEMA_VERSION_LATEST) < 0) {
     const migration = schemaMigrations[version];
     if (!migration) {
       throw new Error(
@@ -137,9 +169,8 @@ export function migrateSchema<T = unknown>(
     }
     result = migration(result);
     // Bump version (assumes sequential vMAJOR.MINOR).
-    const parts = version.slice(1).split('.').map(Number);
-    parts[1] = (parts[1] ?? 0) + 1;
-    version = `v${parts[0]}.${parts[1]}`;
+    const parts = parseSchemaVersion(version);
+    version = `v${parts.major}.${parts.minor + 1}`;
   }
 
   return result as T;
