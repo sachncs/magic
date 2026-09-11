@@ -2,11 +2,12 @@
  * @fileoverview Cancellation manager. Tracks in-flight `fileEditor`
  * operations; on cancel, waits for the current call to complete or
  * aborts via AbortSignal. On abort, restores the file from the
- * snapshot stored in `${dataDir}/undo/<path>.<ts>`.
+ * snapshot stored in `${dataDir}/undo/<path>.<ts>-<seq>-<uuid>`.
  */
 
 import {writeFile, copyFile, stat, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
+import {randomUUID} from 'node:crypto';
 import {dataDir} from '@magic/storage/data_dir';
 
 interface InflightEdit {
@@ -19,6 +20,14 @@ interface InflightEdit {
 const inflight = new Map<string, InflightEdit>();
 
 /**
+ * Monotonically increasing suffix so two concurrent \`beginEdit\` calls
+ * on the same path within the same millisecond still produce distinct
+ * snapshot files. Without this, the second \`copyFile\` overwrites the
+ * first snapshot and cancel-restore silently loses the original.
+ */
+let snapshotSeq = 0;
+
+/**
  * Takes a snapshot of a file before an edit. Returns the snapshot
  * path. Stores an in-flight record so cancellation can find it.
  */
@@ -27,10 +36,11 @@ export async function beginEdit(
   signal?: AbortSignal,
 ): Promise<{snapshotPath: string; signal: AbortSignal}> {
   const ts = Date.now();
+  const seq = ++snapshotSeq;
   const undoDir = `${dataDir()}/undo`;
   await mkdir(undoDir, {recursive: true});
   const safePath = path.replace(/[^a-zA-Z0-9_.-]/g, '_');
-  const snapshotPath = join(undoDir, `${safePath}.${ts}`);
+  const snapshotPath = join(undoDir, `${safePath}.${ts}-${seq}-${randomUUID()}`);
   try {
     await stat(path);
     await copyFile(path, snapshotPath);
