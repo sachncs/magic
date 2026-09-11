@@ -57,7 +57,9 @@ export async function withFileLock<T>(
   audit: {toolCallId: string; mode: 'edit' | 'create' | 'delete'},
 ): Promise<T> {
   const key = createHash('sha256').update(path).digest('hex');
-  const prev = locks.get(key) ?? Promise.resolve();
+  const existing = locks.get(key);
+  const waited = existing !== undefined;
+  const prev = existing ?? Promise.resolve();
   let resolve: () => void;
   const next = new Promise<void>((r) => {
     resolve = r;
@@ -78,7 +80,7 @@ export async function withFileLock<T>(
       ts: new Date().toISOString(),
       path,
       toolCallId: audit.toolCallId,
-      winner: 'second',
+      winner: waited ? 'second' : 'first',
       mode: audit.mode,
     });
   }
