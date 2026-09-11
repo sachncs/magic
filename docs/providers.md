@@ -3,6 +3,27 @@
 magic supports six model providers. Set the env vars for whichever
 you have; detection is automatic.
 
+## Provider catalogue
+
+Every provider magic can talk to today is documented below. We list
+what each provider is and whether the upstream service is run by the
+maintainer (`self-hosted`) or a third party (`hosted`). The default
+shipped providers are intentionally a mix so an operator can choose
+between data-residency and operational convenience.
+
+| Provider       | Who runs it | Notes |
+|----------------|-------------|-------|
+| Local (Ollama / llama.cpp / any OpenAI-compatible) | self-hosted | Bring your own model; defaults to `qwen2.5-coder:14b`. |
+| Amazon Bedrock | hosted (AWS) | Bearer token preferred; also accepts standard AWS creds. |
+| Anthropic      | hosted      | Direct API access to the Claude family. |
+| OpenAI         | hosted      | OpenAI or any OpenAI-compatible endpoint via `MAGIC_MODEL_PROVIDER=openai-compat`. |
+| Google         | hosted      | Gemini models. |
+| MiniMax        | hosted      | OpenAI-compatible inference API at `https://api.minimax.chat/v1`; default model id `MiniMax-M3`. See `## MiniMax` below. |
+
+The provider list lives in `packages/agent-graph/src/model.ts`
+(`SUPPORTED_PROVIDERS`); adding a new one is a one-line append plus
+a detection branch.
+
 ## Detection priority
 
 `buildModel()` walks this list and uses the first match:
@@ -72,7 +93,12 @@ export MINIMAX_MODEL=MiniMax-M3
 ```
 
 All three envs are required. The base URL depends on which MiniMax
-endpoint you have.
+endpoint you have; the default `https://api.minimax.chat/v1` in
+`.env.example` is the public OpenAI-compatible inference API. Use
+this provider when you want a single environment variable triple
+(`MINIMAX_*`) and no regional cloud account — useful for evaluation
+runs and quick demos. For production work we recommend one of the
+hosted-via-cloud providers above.
 
 ## Local (Ollama / llama.cpp / any OpenAI-compatible)
 
