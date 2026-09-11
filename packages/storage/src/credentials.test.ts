@@ -72,4 +72,19 @@ describe('credentials', () => {
     const file = await readFile(`${workDir}/credentials.json`, 'utf8');
     expect(file).not.toContain('this-should-not-appear-in-disk');
   });
+
+  it('refuses to overwrite a non-empty key that fails probe (corrupt key)', async () => {
+    const {setCredential, KeyCorruptError} = await import('./credentials.js');
+    const {readFile, writeFile, stat} = await import('node:fs/promises');
+    await setCredential('PROBE_KEY', 'a-real-secret');
+    // Corrupt the key file: keep length, change contents.
+    const corrupt = Buffer.alloc(32, 0xff);
+    await writeFile(`${workDir}/.key`, corrupt);
+    await expect(setCredential('AFTER_CORRUPT', 'x')).rejects.toBeInstanceOf(KeyCorruptError);
+    // The corrupt key has been moved aside so the operator can recover.
+    const backed = await readFile(`${workDir}/.key.bak`);
+    expect(backed.equals(corrupt)).toBe(true);
+    // And the live .key file is gone (refused to overwrite silently).
+    await expect(stat(`${workDir}/.key`)).rejects.toThrow();
+  });
 });
