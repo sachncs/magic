@@ -26,17 +26,44 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e:browser": "playwright test --config apps/web/playwright.config.ts",
     "test:a11y": "playwright test --config apps/web/playwright.config.ts --grep @a11y",
-    "test:eval": "tsx tests/eval/runner.ts"
+    "test:eval": "tsx tests/eval/runner.ts",
+    "commit": "cz",
+    "site:dev": "npm --prefix site run dev",
+    "site:build": "npm --prefix site run build",
+    "site:preview": "npm --prefix site run preview"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog",
+      "maxHeaderLength": 100,
+      "maxLineWidth": 100,
+      "defaultType": "feat",
+      "types": [
+        { "value": "feat",     "name": "feat:     a new feature" },
+        { "value": "fix",      "name": "fix:      a bug fix" },
+        { "value": "docs",     "name": "docs:     documentation only changes" },
+        { "value": "style",    "name": "style:    formatting, no code change" },
+        { "value": "refactor", "name": "refactor: code change that neither fixes a bug nor adds a feature" },
+        { "value": "perf",     "name": "perf:     performance improvement" },
+        { "value": "test",     "name": "test:     add or correct tests" },
+        { "value": "build",    "name": "build:    build system or external dependencies" },
+        { "value": "ci",       "name": "ci:       CI configuration or scripts" },
+        { "value": "chore",    "name": "chore:    other changes that don't modify src or test files" },
+        { "value": "revert",   "name": "revert:   reverts a previous commit" }
+      ]
+    }
   },
   "devDependencies": {
+    "@playwright/test": "^1.45.0",
     "@types/node": "^20.11.0",
+    "commitizen": "^4.3.2",
     "concurrently": "^8.2.2",
+    "cz-conventional-changelog": "^3.3.0",
     "gts": "^5.3.1",
     "tsx": "^4.7.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
-    "vitest": "^2.1.0",
-    "@playwright/test": "^1.45.0"
+    "vitest": "^2.1.0"
   },
   "repository": {
     "type": "git",
