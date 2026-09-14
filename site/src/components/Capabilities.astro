@@ -1,0 +1,115 @@
+---
+const groups = [
+  {
+    label: 'Understand',
+    color: 'amber',
+    items: [
+      {
+        title: 'Semantic indexer',
+        body:
+          'Walks the repo and emits a RepoManifest — AST, call graph, conventions, prior knowledge. The single source of truth for every downstream agent.',
+      },
+      {
+        title: 'Harness detection',
+        body:
+          'Reads package.json, Makefile, pyproject, Cargo, go.mod — and detects pnpm, yarn, bun — so the right commands run automatically.',
+      },
+      {
+        title: 'Convention learner',
+        body:
+          'On first contact, infers naming, error-handling, test style, import order — and persists them to a per-workspace knowledge base.',
+      },
+    ],
+  },
+  {
+    label: 'Plan & Edit',
+    color: 'violet',
+    items: [
+      {
+        title: 'Explicit planner',
+        body:
+          'A notebook checklist of 3–8 steps with clear success conditions. Reviewed at an approval gate before any code is touched.',
+      },
+      {
+        title: 'Impact analysis',
+        body:
+          'AST search + call graph for multi-file refactors. Knows what depends on what before the first keystroke lands.',
+      },
+      {
+        title: 'Semantic edits',
+        body:
+          'Edits respect the codebase’s dialect. magic reads what the repo already does, not what a generic LLM thinks it should do.',
+      },
+    ],
+  },
+  {
+    label: 'Verify & Ship',
+    color: 'mint',
+    items: [
+      {
+        title: 'Four-gate verifier',
+        body:
+          'typecheck + lint + test + build. Conservative on purpose: rejects on any failure and routes back to the swarm for a fix.',
+      },
+      {
+        title: 'Branch, commit, PR',
+        body:
+          'Conventional Commits, draft PR, gh pr checks. Respects git_policy — no force-push, no reset --hard, ever.',
+      },
+      {
+        title: 'Reporter',
+        body:
+          'A structured markdown report — Summary, Changes, Verification, Next Steps — wired into the PR body for the human reviewer.',
+      },
+    ],
+  },
+];
+
+const colorMap: Record<string, string> = {
+  amber: 'bg-amber/15 text-amber border-amber/30',
+  violet: 'bg-accent-violet/15 text-accent-violet border-accent-violet/30',
+  mint: 'bg-accent-mint/15 text-accent-mint border-accent-mint/30',
+};
+---
+
+<section id="capabilities" class="relative py-24 md:py-32">
+  <div class="container-page">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <p class="eyebrow justify-center">
+        <span class="eyebrow-dot"></span>
+        Capabilities
+      </p>
+      <h2 class="mt-5 font-display text-display-md font-semibold tracking-tightest text-balance text-white">
+        Ten capabilities. <span class="text-white/55">One graph.</span>
+      </h2>
+      <p class="mt-6 text-balance text-lg leading-relaxed text-white/60">
+        Each capability maps to a node or swarm in the topology. Each is independently testable, replacable, and
+        versioned. Each contributes to a verified outcome.
+      </p>
+    </div>
+
+    <div class="mt-16 space-y-10">
+      {groups.map((group) => (
+        <div class="reveal">
+          <div class="mb-5 flex items-center gap-4">
+            <span class={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] ${colorMap[group.color]}`}>
+              <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+              {group.label}
+            </span>
+            <span class="h-px flex-1 bg-gradient-to-r from-white/15 via-white/5 to-transparent"></span>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {group.items.map((item) => (
+              <div class="group relative rounded-2xl border border-white/[0.07] bg-white/[0.015] p-6 transition-all duration-500 hover:border-white/15 hover:bg-white/[0.03]">
+                <div class="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                <h3 class="font-display text-lg font-semibold tracking-tight text-white">{item.title}</h3>
+                <p class="mt-2 text-[14px] leading-relaxed text-white/60">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,120 @@
+---
+import '@fontsource-variable/inter/index.css';
+import '@fontsource-variable/jetbrains-mono/index.css';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = 'magic — true agentic software engineering',
+  description = 'magic is an explicit agent graph that plans, edits, verifies, and ships code on any repository — with real verification gates at every step.',
+  image = '/og.png',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://sachncs.github.io').toString();
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const faviconHref = `${base}favicon.svg`;
+const homeHref = base;
+---
+
+<!doctype html>
+<html lang="en" class="bg-ink-950">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#07070d" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Icons -->
+    <link rel="icon" href={faviconHref} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={faviconHref} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="magic" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <!-- Performance: self-hosted Inter via @fontsource-variable (no remote preconnect needed) -->
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'magic',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'macOS, Linux, Windows',
+      description,
+      url: canonical,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      license: 'https://opensource.org/licenses/MIT',
+    })} />
+
+    <!-- Tiny progressive enhancement: reveal-on-scroll observer -->
+    <script is:inline>
+      (() => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const init = () => {
+          if (reduceMotion) {
+            document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => el.classList.add('in'));
+            return;
+          }
+          if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => el.classList.add('in'));
+            return;
+          }
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('in');
+                  io.unobserve(entry.target);
+                }
+              }
+            },
+            { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
+          );
+          const watch = () => {
+            document
+              .querySelectorAll('.reveal:not(.in), .reveal-stagger:not(.in)')
+              .forEach((el) => io.observe(el));
+          };
+          watch();
+          document.addEventListener('astro:page-load', watch);
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init, { once: true });
+        } else {
+          init();
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="antialiased">
+    <!-- Atmospheric backdrop -->
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div class="absolute inset-x-0 top-0 h-[80vh] bg-radial-fade"></div>
+      <div class="absolute inset-0 bg-noise opacity-40"></div>
+      <div class="absolute inset-0 grid-bg opacity-[0.18] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"></div>
+    </div>
+
+    <slot />
+  </body>
+</html>

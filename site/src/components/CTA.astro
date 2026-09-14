@@ -1,0 +1,91 @@
+---
+const logos = [
+  { name: 'Fastify', glyph: '⚡' },
+  { name: 'React 19', glyph: '◉' },
+  { name: 'Vite', glyph: '◇' },
+  { name: 'TanStack Query', glyph: '◎' },
+  { name: 'Zustand', glyph: '◐' },
+  { name: 'Playwright', glyph: '▶' },
+  { name: 'SQLite · FTS5', glyph: '◧' },
+  { name: 'WebSocket', glyph: '⌬' },
+];
+---
+
+<section id="get-started" class="relative py-24 md:py-32">
+  <div aria-hidden="true" class="glow-orb left-1/2 top-1/2 h-[460px] w-[700px] -translate-x-1/2 -translate-y-1/2 bg-amber/20"></div>
+
+  <div class="container-page relative">
+    <div class="reveal panel relative overflow-hidden p-10 md:p-16">
+      <div aria-hidden="true" class="absolute inset-0 -z-10 opacity-60 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]">
+        <div class="absolute inset-0 grid-bg"></div>
+      </div>
+
+      <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
+        <div>
+          <p class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Get started
+          </p>
+          <h2 class="mt-5 font-display text-display-md font-semibold tracking-tightest text-balance text-white">
+            One repo. <br class="hidden sm:block" />
+            <span class="text-gradient-amber">One command.</span>
+          </h2>
+          <p class="mt-6 max-w-lg text-[17px] leading-relaxed text-white/65">
+            Clone, configure a model provider, and run <span class="font-mono text-white">npm run dev</span>. UI at
+            <span class="font-mono text-white">localhost:5173</span>, Fastify at
+            <span class="font-mono text-white">localhost:4317</span>.
+          </p>
+
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="https://github.com/sachncs/magic"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-primary group"
+            >
+              <svg viewBox="0 0 16 16" class="h-4 w-4 fill-current" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+              </svg>
+              View on GitHub
+              <span class="font-mono text-[11px] text-ink-700/80">MIT</span>
+            </a>
+            <a href="#capabilities" class="btn-ghost">Browse the architecture</a>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-950 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5 font-mono text-[11px] text-white/40">
+              <span>~/magic</span>
+              <span>bash</span>
+            </div>
+            <pre class="overflow-x-auto p-5 font-mono text-[12.5px] leading-[1.7] text-white/85"><code><span class="text-white/40"># 1. Install</span>
+<span class="text-accent-mint">git</span> clone https://github.com/sachncs/magic.git
+<span class="text-accent-mint">cd</span> magic
+<span class="text-accent-mint">nvm</span> use              <span class="text-white/35"># picks up Node 20</span>
+
+<span class="text-white/40"># 2. Configure</span>
+<span class="text-accent-mint">cp</span> .env.example .env
+<span class="text-accent-mint">$EDITOR</span> .env        <span class="text-white/35"># any model provider</span>
+
+<span class="text-white/40"># 3. Run</span>
+<span class="text-accent-mint">npm</span> run dev
+<span class="text-amber">→</span> UI at http://localhost:5173
+<span class="text-amber">→</span> Fastify at http://localhost:4317</code></pre>
+          </div>
+          <div aria-hidden="true" class="pointer-events-none absolute -bottom-12 left-6 right-6 h-24 rounded-full bg-amber/25 blur-3xl"></div>
+        </div>
+      </div>
+
+      <!-- logo strip -->
+      <div class="reveal-stagger mt-14 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-8 sm:grid-cols-4 md:grid-cols-8">
+        {logos.map((l) => (
+          <div class="flex items-center justify-center gap-2 text-white/55 transition hover:text-white">
+            <span class="text-base text-amber/80">{l.glyph}</span>
+            <span class="text-[12px] font-medium">{l.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,125 @@
+---
+const providers = [
+  { name: 'Bedrock', sub: 'AWS', glyph: 'B', tone: 'amber' },
+  { name: 'Anthropic', sub: 'Claude', glyph: 'A', tone: 'rose' },
+  { name: 'OpenAI', sub: 'GPT', glyph: 'O', tone: 'mint' },
+  { name: 'Google', sub: 'Gemini', glyph: 'G', tone: 'sky' },
+  { name: 'Ollama', sub: 'Local', glyph: 'L', tone: 'amber' },
+  { name: 'llama.cpp', sub: 'Local', glyph: 'L', tone: 'violet' },
+  { name: 'MiniMax', sub: 'Coding Plan', glyph: 'M', tone: 'amber' },
+];
+
+const toneMap: Record<string, string> = {
+  amber: 'from-amber/30 to-amber/0 text-amber',
+  rose: 'from-accent-rose/30 to-accent-rose/0 text-accent-rose',
+  mint: 'from-accent-mint/30 to-accent-mint/0 text-accent-mint',
+  sky: 'from-accent-sky/30 to-accent-sky/0 text-accent-sky',
+  violet: 'from-accent-violet/30 to-accent-violet/0 text-accent-violet',
+};
+
+const features = [
+  { k: 'Auto-detect', v: 'magic picks the provider in priority order from env vars.' },
+  { k: 'Bring your own', v: 'Any OpenAI-compatible endpoint (Ollama, llama.cpp, vLLM, LiteLLM).' },
+  { k: 'Sandbox', v: 'CWD-locked + destructive denylist + resource limits, per preset.' },
+  { k: 'Network policy', v: 'localhost-only mode for tools; model calls always allowed.' },
+];
+---
+
+<section id="stack" class="relative py-24 md:py-32">
+  <div class="container-page">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
+      <!-- Left: providers -->
+      <div class="reveal">
+        <p class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Stack
+        </p>
+        <h2 class="mt-5 font-display text-display-sm font-semibold tracking-tightest text-balance text-white">
+          Bring any model.
+          <br />
+          <span class="text-white/55">Local or hosted.</span>
+        </h2>
+        <p class="mt-6 max-w-xl text-[17px] leading-relaxed text-white/60">
+          magic picks your model provider automatically from environment variables. Switch providers without touching
+          the graph.
+        </p>
+
+        <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {providers.map((p) => (
+            <div class="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-4 transition-all duration-300 hover:border-white/15 hover:bg-white/[0.035]">
+              <div class={`absolute -top-12 -right-12 h-24 w-24 rounded-full bg-gradient-to-br ${toneMap[p.tone]} opacity-60 blur-2xl`}></div>
+              <div class="relative flex items-center gap-3">
+                <span class={`flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] font-mono text-sm font-semibold ${toneMap[p.tone].split(' ').pop()}`}>
+                  {p.glyph}
+                </span>
+                <div>
+                  <div class="text-sm font-medium text-white">{p.name}</div>
+                  <div class="font-mono text-[11px] text-white/45">{p.sub}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right: features / sandbox -->
+      <div class="reveal">
+        <div class="panel relative h-full p-7 md:p-8">
+          <div class="absolute inset-0 -z-10 rounded-3xl bg-grid opacity-10 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_70%)]"></div>
+
+          <div class="flex items-center gap-2 text-2xs uppercase tracking-[0.18em] text-white/45">
+            <span class="h-1.5 w-1.5 rounded-full bg-accent-mint shadow-[0_0_12px_2px_rgba(95,227,161,0.45)]"></span>
+            Built for safety
+          </div>
+          <h3 class="mt-4 font-display text-2xl font-semibold tracking-tight text-white">
+            Sandbox policy by preset.
+          </h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/65">
+            Every shell, file editor, and file read honors a shared <span class="font-mono text-white/85">SandboxPolicy</span>.
+            Switching presets fans out one event to all three tools.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-xl border border-white/[0.07]">
+            <table class="w-full text-left text-[13px]">
+              <thead class="bg-white/[0.03] text-2xs uppercase tracking-[0.16em] text-white/40">
+                <tr>
+                  <th class="px-4 py-3 font-medium">Preset</th>
+                  <th class="px-4 py-3 font-medium">Mode</th>
+                  <th class="px-4 py-3 font-medium">Approvals</th>
+                </tr>
+              </thead>
+              <tbody class="font-mono text-white/75">
+                <tr class="border-t border-white/[0.05]">
+                  <td class="px-4 py-3 text-white/85">read-only</td>
+                  <td class="px-4 py-3 text-white/55">read-only</td>
+                  <td class="px-4 py-3 text-white/55">destructive</td>
+                </tr>
+                <tr class="border-t border-white/[0.05] bg-white/[0.015]">
+                  <td class="px-4 py-3 text-white/85">workspace-write</td>
+                  <td class="px-4 py-3 text-white/55">workspace-write</td>
+                  <td class="px-4 py-3 text-white/55">destructive</td>
+                </tr>
+                <tr class="border-t border-white/[0.05]">
+                  <td class="px-4 py-3 text-white/85">danger-full-access</td>
+                  <td class="px-4 py-3 text-white/55">full</td>
+                  <td class="px-4 py-3 text-white/55">never</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ul class="mt-6 space-y-3">
+            {features.map((f) => (
+              <li class="flex items-start gap-3 text-[14px] text-white/65">
+                <svg viewBox="0 0 16 16" class="mt-0.5 h-4 w-4 shrink-0 fill-amber" aria-hidden="true">
+                  <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm3.78 5.47a.75.75 0 0 0-1.06 0L7.25 8.94 5.28 6.97a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l4-4a.75.75 0 0 0 0-1.06Z"/>
+                </svg>
+                <span><span class="text-white">{f.k}</span> — {f.v}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

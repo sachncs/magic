@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="404 — magic" description="The page you’re looking for doesn’t exist.">
+  <main class="relative flex min-h-screen items-center justify-center px-6">
+    <div class="text-center">
+      <p class="eyebrow justify-center">
+        <span class="eyebrow-dot"></span>
+        404
+      </p>
+      <h1 class="mt-6 font-display text-display-md font-semibold tracking-tightest text-white">
+        Lost in the graph.
+      </h1>
+      <p class="mx-auto mt-5 max-w-md text-[16px] text-white/55">
+        That node doesn’t exist in the topology. Head back to the entry point.
+      </p>
+      <a href={(import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`)} class="btn-primary mt-8">Take me home</a>
+    </div>
+  </main>
+</Base>

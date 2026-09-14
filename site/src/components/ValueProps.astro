@@ -1,0 +1,65 @@
+---
+const items = [
+  {
+    eyebrow: '01',
+    title: 'A graph, not a chat.',
+    body:
+      'magic is an explicit topology of agents. Every step has a job, a tool surface, and an exit condition. No prompt soup. No copy-paste from autocomplete.',
+  },
+  {
+    eyebrow: '02',
+    title: 'Verification is the product.',
+    body:
+      'Every diff must clear typecheck + lint + test + build before it becomes a PR. The verifier is a first-class node — not a footnote.',
+  },
+  {
+    eyebrow: '03',
+    title: 'Approvals where they matter.',
+    body:
+      'Magic gates live at the right moments: before the plan, before the diff, before destructive ops. Everything else is autonomous.',
+  },
+];
+---
+
+<section class="relative py-24 md:py-32">
+  <div class="container-page">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <p class="eyebrow justify-center">
+        <span class="eyebrow-dot"></span>
+        Why magic
+      </p>
+      <h2 class="mt-5 font-display text-display-md font-semibold tracking-tightest text-balance text-white">
+        Most AI tools ship suggestions.
+        <br />
+        <span class="text-white/55">magic ships pull requests.</span>
+      </h2>
+      <p class="mt-6 text-balance text-lg leading-relaxed text-white/60">
+        Today’s coding assistants plan, edit, and ship without verification gates. Reviews catch what they ship; tests
+        catch what reviews miss. magic inverts that: nothing ships until it has cleared every gate.
+      </p>
+    </div>
+
+    <div class="reveal-stagger mt-16 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+      {items.map((item) => (
+        <article class="panel group relative p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/15">
+          <div class="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+          <div class="flex items-center gap-3 text-white/45">
+            <span class="font-mono text-xs">{item.eyebrow}</span>
+            <span class="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent"></span>
+          </div>
+          <h3 class="mt-6 font-display text-2xl font-semibold tracking-tight text-white">
+            {item.title}
+          </h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-white/65">{item.body}</p>
+
+          <div class="mt-7 inline-flex items-center gap-1 text-sm text-amber opacity-0 transition-all duration-500 group-hover:opacity-100">
+            <span>Learn more</span>
+            <svg viewBox="0 0 16 16" class="h-3 w-3 fill-current transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+              <path d="M5.22 4.22a.75.75 0 0 1 1.06 0L11.19 9.19a.75.75 0 0 1 0 1.06L6.28 14.78a.75.75 0 0 1-1.06-1.06L9.44 10.5H1.75a.75.75 0 0 1 0-1.5h7.69L5.22 5.28a.75.75 0 0 1 0-1.06Z"/>
+            </svg>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

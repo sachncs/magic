@@ -1,0 +1,96 @@
+---
+const lines = [
+  { p: '$', t: 'nvm use && npm install', c: true },
+  { p: '✓', t: 'magic · session af-91c4 · task #14', c: 'mint' },
+  { p: '>', t: 'indexer walking repo · 1,284 files', c: 'mute' },
+  { p: '>', t: 'harness: package.json · pnpm · vitest', c: 'mute' },
+  { p: '>', t: 'planner: 5 steps · 3 conditional', c: 'mute' },
+  { p: '!', t: 'awaiting approval · plan + diff', c: 'amber' },
+  { p: '✓', t: 'approved · coder swarm dispatching', c: 'mint' },
+  { p: '>', t: 'verifier · typecheck 1.4s · lint 0.7s · tests 12.3s · build 8.1s', c: 'mute' },
+  { p: '✓', t: 'all gates passed · opening draft PR', c: 'mint' },
+  { p: '$', t: 'gh pr checks · all green', c: true },
+];
+const tone: Record<string, string> = {
+  mint: 'text-accent-mint',
+  amber: 'text-amber',
+  mute: 'text-white/55',
+};
+---
+
+<section id="docs" class="relative py-24 md:py-32">
+  <div class="container-page">
+    <div class="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-14">
+      <!-- Left: copy -->
+      <div class="reveal">
+        <p class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          In the terminal
+        </p>
+        <h2 class="mt-5 font-display text-display-sm font-semibold tracking-tightest text-balance text-white">
+          A CLI that fits your existing workflow.
+        </h2>
+        <p class="mt-6 max-w-xl text-[17px] leading-relaxed text-white/60">
+          magic is a web app with a Fastify backend, but the same agent graph is reachable from a single CLI. Bring your
+          model, point it at a repo, and let it run.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          <span class="chip">Node 20+</span>
+          <span class="chip">TypeScript 5.7</span>
+          <span class="chip">Fastify</span>
+          <span class="chip">Vite</span>
+          <span class="chip">Playwright</span>
+          <span class="chip">SQLite / JSONL</span>
+          <span class="chip">WS streaming</span>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <a href="https://github.com/sachncs/magic#install" class="group flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 transition hover:border-white/15 hover:bg-white/[0.04]">
+            <span class="text-sm text-white">Install & quickstart</span>
+            <svg viewBox="0 0 16 16" class="h-3 w-3 fill-current text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white" aria-hidden="true">
+              <path d="M5.22 4.22a.75.75 0 0 1 1.06 0L11.19 9.19a.75.75 0 0 1 0 1.06L6.28 14.78a.75.75 0 0 1-1.06-1.06L9.44 10.5H1.75a.75.75 0 0 1 0-1.5h7.69L5.22 5.28a.75.75 0 0 1 0-1.06Z"/>
+            </svg>
+          </a>
+          <a href="https://github.com/sachncs/magic/blob/main/docs/architecture.md" class="group flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 transition hover:border-white/15 hover:bg-white/[0.04]">
+            <span class="text-sm text-white">Read the architecture</span>
+            <svg viewBox="0 0 16 16" class="h-3 w-3 fill-current text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white" aria-hidden="true">
+              <path d="M5.22 4.22a.75.75 0 0 1 1.06 0L11.19 9.19a.75.75 0 0 1 0 1.06L6.28 14.78a.75.75 0 0 1-1.06-1.06L9.44 10.5H1.75a.75.75 0 0 1 0-1.5h7.69L5.22 5.28a.75.75 0 0 1 0-1.06Z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: terminal mock -->
+      <div class="reveal">
+        <div class="panel overflow-hidden">
+          <div class="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+            <div class="flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-[#febc2e]"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-[#28c840]"></span>
+            </div>
+            <div class="flex items-center gap-2 font-mono text-[11px] text-white/45">
+              <svg viewBox="0 0 16 16" class="h-3 w-3 fill-current opacity-70" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h7A2.5 2.5 0 0 1 14 2.5v11a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-11ZM4.5 1.5a1 1 0 0 0-1 1V6h9V2.5a1 1 0 0 0-1-1h-7ZM3.5 13.5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7.5h-9v6Z"/></svg>
+              ~/code/magic · magic run
+            </div>
+            <div class="font-mono text-[11px] text-white/35">80 × 24</div>
+          </div>
+
+          <div class="bg-ink-950 p-5 md:p-6 font-mono text-[13px] leading-[1.7]">
+            {lines.map((line, i) => (
+              <div class="flex items-start gap-3">
+                <span class={`mt-[2px] inline-block w-4 shrink-0 text-center ${tone[line.c ?? 'mute'] ?? 'text-white/70'}`}>{line.p}</span>
+                <span class={`${tone[line.c ?? 'mute'] ?? 'text-white/85'} ${line.c === true ? 'text-white/90' : ''}`}>{line.t}</span>
+              </div>
+            ))}
+            <div class="mt-2 flex items-center gap-2">
+              <span class="inline-block h-3 w-2 animate-pulse-soft bg-amber"></span>
+              <span class="text-white/30">awaiting next instruction</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
